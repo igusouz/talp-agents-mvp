@@ -1,0 +1,17 @@
+[
+  {
+    "name": "password_reset_coverage",
+    "expected_contains": [
+      "reset email",
+      "expired reset link",
+      "unregistered email",
+      "token reuse"
+    ],
+    "min_counts": {
+      "negative_cases": 3,
+      "edge_cases": 3,
+      "ambiguities": 3,
+      "questions_for_refinement": 2
+    }
+  }
+]

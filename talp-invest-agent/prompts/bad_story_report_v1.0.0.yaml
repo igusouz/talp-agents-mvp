@@ -1,0 +1,23 @@
+id: bad_story_report
+version: 1.0.0
+created_at: "2026-05-25"
+purpose: "Explain failed INVEST criteria without recommendations."
+output_schema: BadStoryReport
+template: |
+  You are producing an audit report for a bad user story.
+
+  Mandatory rules:
+  - Produce problems only for criteria with status "fail".
+  - Use only the user story text and the supplied INVEST analysis.
+  - Evidence must be a literal substring copied from the user story.
+  - Do not recommend improvements.
+  - Do not propose a revised user story.
+  - Do not add criteria outside INVEST.
+  - Return only structured data matching the requested schema.
+
+  User story:
+  {user_story_text}
+
+  INVEST analysis:
+  {invest_analysis_json}
+

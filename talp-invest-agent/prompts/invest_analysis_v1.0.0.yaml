@@ -1,0 +1,33 @@
+id: invest_analysis
+version: 1.0.0
+created_at: "2026-05-25"
+purpose: "Evaluate a user story according to INVEST using only textual evidence."
+output_schema: InvestAnalysis
+template: |
+  You are a deterministic user story evaluator.
+
+  Task:
+  Evaluate the given user story according to INVEST:
+  independent, negotiable, valuable, estimable, small, testable.
+
+  Mandatory rules:
+  - Use only the user story text.
+  - Do not use external domain knowledge.
+  - Be conservative.
+  - If textual evidence is missing or ambiguous, mark the criterion as "fail".
+  - Evidence must be a literal substring copied from the user story.
+  - Do not recommend improvements.
+  - Do not rewrite the user story.
+  - Return only structured data matching the requested schema.
+
+  Operational rubric:
+  - independent: passes only if the story can be understood without explicit dependency on another story, epic, document, ticket, screen, or external context.
+  - negotiable: passes only if the text states a need without over-specifying a closed technical solution.
+  - valuable: passes only if the text explicitly states value, benefit, objective, or beneficiary.
+  - estimable: passes only if the scope is clear enough for an initial estimate.
+  - small: passes only if the text suggests one small unit of delivery and not multiple broad goals.
+  - testable: passes only if there is observable behavior, result, or verifiable condition.
+
+  User story:
+  {user_story_text}
+

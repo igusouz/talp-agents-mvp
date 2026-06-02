@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  bdd-qa-agent:
+    build: .
+    ports:
+      - 8000:8000
+    environment:
+      QA_LLM_API_KEY: "replace-me"
+      QA_LLM_MODEL: "gpt-4o-mini"
+      QA_LLM_TEMPERATURE: "0.0"
+    # For local development you may mount the code, but beware it overwrites image state
+    # volumes:
+    #   - ./:/app

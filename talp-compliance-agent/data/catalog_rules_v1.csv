@@ -1,0 +1,9 @@
+rule_id,name,domain,description,mandatory,blocking,keywords,evidence
+RULE_001,Sinais Vitais Obrigatórios,Triagem,A triagem deve conter sinais vitais e comorbidades do paciente.,true,true,"triagem;sinais vitais;parâmetros clínicos;parametros clinicos;comorbidades",US001
+RULE_002,Classificação Manchester,Triagem,Todo paciente deve ser classificado pelo Protocolo Manchester.,true,true,"classificação de risco;classificacao de risco;Manchester",US002
+RULE_003,Registro HDA,Atendimento Médico,A História da Doença Atual deve ser registrada.,true,true,"HDA;história da doença atual;historia da doenca atual",US003
+RULE_004,CID Obrigatório,Diagnóstico,Todo atendimento deve possuir CID associado.,true,true,"CID;diagnóstico;diagnostico",US004
+RULE_005,Conduta Médica Obrigatória,Diagnóstico,Toda consulta deve registrar a conduta médica adotada.,true,true,"conduta;plano terapêutico;plano terapeutico",US004
+RULE_006,Atualização de Status,Fluxo Assistencial,O status do atendimento deve ser atualizado ao longo do fluxo.,true,false,"status;atendimento",US005
+RULE_007,Prescrição Médica Obrigatória,Prescrição,Medicamentos exigem prescrição válida.,true,true,"prescrição;prescricao;medicamento;medicamentos;remédio;remedio;fármaco;farmaco",US006
+RULE_008,Validação CCIH,Controle de Infecção,Antimicrobianos exigem validação da CCIH.,true,true,"antimicrobiano;antimicrobianos;antibiótico;antibiotico;antibióticos;antibioticos;CCIH",US007

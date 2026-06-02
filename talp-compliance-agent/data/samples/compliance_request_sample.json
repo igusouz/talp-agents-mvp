@@ -1,0 +1,23 @@
+{
+  "investment_id": "INV-2026-001",
+  "invest_result": {
+    "investment_id": "INV-2026-001",
+    "status": "warning",
+    "criteria_results": [
+      {
+        "criterion_id": "EST-001",
+        "criterion_name": "Estimable",
+        "result": true,
+        "evidence": "Dados financeiros disponíveis"
+      },
+      {
+        "criterion_id": "TEST-001",
+        "criterion_name": "Testable",
+        "result": false,
+        "evidence": "Histórico insuficiente de performance"
+      }
+    ],
+    "summary": "Resultado do invest-agent",
+    "metadata": {}
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "investment_id": "INV-2026-001",
+  "status": "warning",
+  "criteria_results": [
+    {
+      "criterion_id": "EST-001",
+      "criterion_name": "Estimable",
+      "result": true,
+      "evidence": "Dados financeiros disponíveis"
+    },
+    {
+      "criterion_id": "TEST-001",
+      "criterion_name": "Testable",
+      "result": false,
+      "evidence": "Histórico insuficiente de performance"
+    },
+    {
+      "criterion_id": "VERIF-001",
+      "criterion_name": "Verificável",
+      "result": true,
+      "evidence": "Documentação completa"
+    },
+    {
+      "criterion_id": "REL-001",
+      "criterion_name": "Relevante",
+      "result": true,
+      "evidence": "Alinhado com objetivos"
+    },
+    {
+      "criterion_id": "SPECIFIC-001",
+      "criterion_name": "Específico",
+      "result": false,
+      "evidence": "Escopo não bem definido"
+    }
+  ],
+  "summary": "Investimento com critérios parcialmente atendidos. Requer ajustes.",
+  "metadata": {
+    "agent_version": "1.0.0",
+    "evaluation_date": "2026-05-25",
+    "region": "Brasil"
+  }
+}
