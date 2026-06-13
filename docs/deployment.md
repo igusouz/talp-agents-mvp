@@ -73,7 +73,9 @@ The frontend uses Vite environment variables:
 ```env
 VITE_APP_NAME=TALP Workflow Frontend
 VITE_APP_VERSION=0.1.0
-VITE_ORCHESTRATOR_API_BASE_URL=http://localhost:8000/api/v1
+VITE_ORCHESTRATOR_BASE_URL=http://localhost:8000/api/v1
+# Legacy alias still supported:
+# VITE_ORCHESTRATOR_API_BASE_URL=http://localhost:8000/api/v1
 VITE_REQUEST_TIMEOUT_MS=30000
 VITE_ENABLE_MOCKS=false
 ```
@@ -112,14 +114,14 @@ python -m app.main "As a customer, I want to reset my password..."
 
 ```bash
 cd talp-compliance-agent
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8002 --reload
 ```
 
 #### BDD QA Agent
 
 ```bash
 cd talp-bdd-agent
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8003 --reload
 ```
 
 #### Workflow Orchestrator
@@ -148,6 +150,8 @@ Recommended ports:
 - Invest API: `8001`
 - Compliance API: `8002`
 - BDD API: `8003`
+
+When running services on custom local ports, make sure `ORCH_INVEST_AGENT_BASE_URL`, `ORCH_COMPLIANCE_AGENT_BASE_URL`, and `ORCH_BDD_AGENT_BASE_URL` point to those same ports.
 
 ## Docker Execution
 
@@ -239,3 +243,9 @@ Recommended hostnames within Docker Compose:
 - Workflow Orchestrator calls downstream services with HTTPX.
 - Compliance Agent persists rule and run data locally.
 - BDD QA Agent returns generated scenarios and supporting analysis directly to the orchestrator.
+
+## Secrets and Credentials
+
+- Never commit real API keys, tokens, or provider credentials to `docker-compose.yml`.
+- Prefer loading secrets from `.env` files that are gitignored, CI/CD secret stores, or runtime secret managers.
+- Rotate any credential immediately if it was exposed in source control history.

@@ -15,18 +15,13 @@ Frontend foundation for the TALP multi-agent platform built with React, TypeScri
 1. Copy `.env.example` to `.env`.
 2. Install dependencies with your preferred package manager.
 3. Run `npm run dev`.
-# TALP Workflow Orchestrator UI
 
-Frontend foundation for the TALP multi-agent platform.
+## Environment
 
-## Included
-
-- React + TypeScript + Vite project scaffold
-- Route-driven layout architecture
-- Typed workflow and analysis models
-- API client foundation for the Workflow Orchestrator
-- Environment configuration
-- Global and route-level error handling
+- `VITE_ORCHESTRATOR_BASE_URL` is the primary API base URL.
+- `VITE_ORCHESTRATOR_API_BASE_URL` remains supported as a legacy alias.
+- `VITE_REQUEST_TIMEOUT_MS` controls frontend request timeout.
+- `VITE_ENABLE_MOCKS` toggles mock behavior in local development.
 
 ## Scripts
 

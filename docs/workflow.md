@@ -11,8 +11,9 @@ This document describes the end-to-end workflow executed by the platform.
 5. The frontend receives the combined analyses and displays them for review.
 6. A human reviewer approves, edits, or rewrites the story.
 7. The approved version is sent back to the Workflow Orchestrator.
-8. The orchestrator forwards the approved story to the BDD QA Agent.
-9. The frontend displays the final BDD analysis.
+8. The orchestrator returns `202 Accepted`, stores stage `approved`, and starts BDD processing in the background.
+9. The frontend polls the workflow state until the stage becomes `bdd_done` or `failed`.
+10. The frontend displays the final BDD analysis.
 
 ## Human-in-the-Loop Stage
 
@@ -40,11 +41,13 @@ stateDiagram-v2
   Draft --> Invest_Analysis: submit story
   Invest_Analysis --> Compliance_Analysis: analyze INVEST output
   Compliance_Analysis --> Awaiting_Human_Review: analyses ready
-  Awaiting_Human_Review --> BDD_Processing: approve story
+  Awaiting_Human_Review --> Approved: approval accepted (202)
+  Approved --> BDD_Processing: background BDD task starts
   BDD_Processing --> Completed: BDD analysis returned
   Awaiting_Human_Review --> Draft: rewrite story
   Awaiting_Human_Review --> Awaiting_Human_Review: edit draft
   Compliance_Analysis --> Failed: upstream error
+  Approved --> Failed: upstream error
   BDD_Processing --> Failed: upstream error
   Completed --> [*]
   Failed --> [*]
@@ -77,7 +80,12 @@ sequenceDiagram
   O-->>F: Return Invest and Compliance analysis
   U->>F: Review and edit
   F->>O: POST approved story
-  O-->>F: Return BDD analysis
+  O-->>F: 202 Accepted (stage=approved)
+  loop Until done
+    F->>O: GET workflow state
+    O-->>F: stage=approved|bdd_done|failed
+  end
+  O-->>F: BDD analysis available (bdd_done)
 ```
 
 ### Orchestrator flow
@@ -94,8 +102,12 @@ sequenceDiagram
   I-->>O: Return INVEST result
   O->>C: Send INVEST result
   C-->>O: Return compliance analysis
-  O->>B: Send approved story
+  O-->>F: Return waiting_for_review state
+  F->>O: Submit approved story
+  O-->>F: 202 Accepted (stage=approved)
+  O->>B: Send approved story (background task)
   B-->>O: Return BDD analysis
+  O-->>F: Expose bdd_done in workflow state
 ```
 
 ### Agent communication
@@ -117,5 +129,8 @@ sequenceDiagram
 
 - The workflow is intentionally split into two phases: analysis and approval.
 - The human review stage is the only place where the user can modify the story before BDD generation.
-- State is persisted in the frontend session storage and can also be recovered from the orchestrator when the workflow route is revisited.
-- Any upstream failure should keep the workflow in a recoverable state when possible.
+- Approval is asynchronous: clients should poll `GET /workflows/{workflow_id}` or call `GET /workflows/{workflow_id}/bdd-results` after `bdd_done`.
+- `GET /workflows/{workflow_id}/bdd-results` can return `409 Conflict` while BDD processing is still running.
+- Frontend keeps workflow snapshots in session storage for UX continuity.
+- Current orchestrator state is in-memory and is lost on process restart.
+- Any upstream failure should move the workflow to `failed` and preserve the latest recoverable state.

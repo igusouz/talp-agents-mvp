@@ -76,10 +76,10 @@ Typical response payload:
 
 Status codes:
 
-- `200 OK` or `201 Created` for successful workflow creation.
-- `400 Bad Request` for validation failures.
-- `429 Too Many Requests` for upstream throttling.
-- `500 Internal Server Error` for unexpected failures.
+- `201 Created` for successful workflow creation.
+- `422 Unprocessable Entity` for request validation failures.
+- `4xx` or `5xx` forwarded when a downstream service fails.
+- `502 Bad Gateway` for transport/runtime failures while calling downstream agents.
 
 ### Retrieve Workflow State
 
@@ -136,28 +136,21 @@ Typical response payload:
 ```json
 {
   "workflow_id": "wf_123",
-  "stage": "bdd_done",
+  "stage": "approved",
   "approved_story": { "title": "...", "description": "...", "acceptance_criteria": [] },
-  "bdd_analysis": {
-    "summary": "...",
-    "bdd_scenarios": [],
-    "negative_cases": [],
-    "edge_cases": [],
-    "ambiguities": [],
-    "risks": [],
-    "automation_suggestions": [],
-    "questions_for_refinement": []
-  },
+  "bdd_analysis": null,
+  "updated_at": "2026-06-11T10:30:30Z",
   "correlation_id": "corr_789"
 }
 ```
 
+`POST /workflows/{workflow_id}/approval` is asynchronous. The API accepts the approved story and starts BDD generation in the background. Clients should poll `GET /workflows/{workflow_id}` until `stage` becomes `bdd_done` or `failed`.
+
 Status codes:
 
-- `200 OK`
-- `400 Bad Request`
+- `202 Accepted`
 - `404 Not Found`
-- `500 Internal Server Error`
+- `422 Unprocessable Entity`
 
 ### Retrieve BDD Results
 
@@ -184,6 +177,7 @@ Status codes:
 
 - `200 OK`
 - `404 Not Found`
+- `409 Conflict` when BDD processing is not finished yet.
 
 ## Invest Agent APIs
 
