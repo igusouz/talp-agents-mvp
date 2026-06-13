@@ -105,6 +105,21 @@ class QAAnalysisChain:
         )
         self._chain = self._prompt | self._llm.with_structured_output(QAAnalysisResponse)
 
+    @staticmethod
+    def _normalize_response(result: object) -> QAAnalysisResponse:
+        """Normalize provider-specific structured-output wrappers to QAAnalysisResponse."""
+
+        if isinstance(result, QAAnalysisResponse):
+            return result
+
+        parsed = getattr(result, "parsed", None)
+        if isinstance(parsed, QAAnalysisResponse):
+            return parsed
+        if parsed is not None:
+            return QAAnalysisResponse.model_validate(parsed)
+
+        return QAAnalysisResponse.model_validate(result)
+
     def invoke(self, request: QARequest) -> QAAnalysisResponse:
         """Run the QA analysis workflow for one user story."""
 
@@ -121,7 +136,8 @@ class QAAnalysisChain:
             "story": request.story.strip(),
         }
         try:
-            return self._chain.invoke(payload)
+            result = self._chain.invoke(payload)
+            return self._normalize_response(result)
         except RateLimitError as exc:
             logger.warning(
                 "QA analysis rate-limited by upstream provider for prompt_version=%s",

@@ -20,6 +20,13 @@ from app.services.persistence_service import PersistenceService
 router = APIRouter(prefix="/api/v1/compliance", tags=["compliance"])
 
 
+def _persist_analysis_safely(response: ComplianceAnalysisResponse, request: ComplianceAnalysisRequest) -> None:
+    try:
+        PersistenceService.save_analysis(response=response, request=request)
+    except Exception as exc:
+        print(f"[WARN] Não foi possível persistir análise: {exc}")
+
+
 class AnalyzeFileRequest(BaseModel):
     """Payload para análise a partir de arquivo JSON local."""
 
@@ -35,7 +42,7 @@ async def analyze_compliance(
     """
     try:
         response = run_compliance_graph(request)
-        PersistenceService.save_analysis(response=response, request=request)
+        _persist_analysis_safely(response=response, request=request)
         return response
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
@@ -94,7 +101,7 @@ async def analyze_compliance_file(
             )
 
         response = run_compliance_graph(analysis_request)
-        PersistenceService.save_analysis(response=response, request=analysis_request)
+        _persist_analysis_safely(response=response, request=analysis_request)
 
         return response
 

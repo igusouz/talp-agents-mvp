@@ -11,7 +11,7 @@ services:
       VITE_ORCHESTRATOR_BASE_URL: http://localhost:8000/api/v1
       # Legacy key kept during migration for compatibility with older code paths.
       VITE_ORCHESTRATOR_API_BASE_URL: http://localhost:8000/api/v1
-      VITE_REQUEST_TIMEOUT_MS: "30000"
+      VITE_REQUEST_TIMEOUT_MS: "240000"
       VITE_ENABLE_MOCKS: "false"
     depends_on:
       - workflow-orchestrator
@@ -32,13 +32,13 @@ services:
       ORCH_COMPLIANCE_AGENT_BASE_URL: http://compliance-agent:8000/api/v1/compliance
       ORCH_BDD_AGENT_BASE_URL: http://bdd-agent:8000/api/v1/qa
       # Timeout settings (seconds)
-      ORCH_REQUEST_TIMEOUT_SECONDS: "30"
+      ORCH_REQUEST_TIMEOUT_SECONDS: "240"
       ORCH_CONNECT_TIMEOUT_SECONDS: "5"
-      ORCH_READ_TIMEOUT_SECONDS: "25"
-      ORCH_WRITE_TIMEOUT_SECONDS: "25"
+      ORCH_READ_TIMEOUT_SECONDS: "180"
+      ORCH_WRITE_TIMEOUT_SECONDS: "180"
       ORCH_POOL_TIMEOUT_SECONDS: "5"
       # Retry settings
-      ORCH_RETRY_ATTEMPTS: "3"
+      ORCH_RETRY_ATTEMPTS: "0"
       ORCH_RETRY_BACKOFF_SECONDS: "0.5"
       ORCH_RETRY_MAX_BACKOFF_SECONDS: "5"
       ORCH_RETRY_JITTER_SECONDS: "0.2"
@@ -60,8 +60,8 @@ services:
       TALP_LLM_MODEL: gemini-2.5-flash
       TALP_AUDIT_LOG_DIR: /app/logs/audit
       # Required when TALP_BACKEND=llm. Set in your shell or a .env file at repo root.
-      # GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
-      # GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
     volumes:
       - ./talp-invest-agent/logs:/app/logs
 
@@ -96,11 +96,11 @@ services:
       QA_API_PREFIX: /api/v1
       QA_LOG_LEVEL: INFO
       # Model name. Use any OpenAI-compatible model name supported by your provider.
-      QA_LLM_MODEL: gpt-4o-mini
+      QA_LLM_MODEL: nvidia/nemotron-3-ultra-550b-a55b:free
       QA_LLM_TEMPERATURE: "0.0"
-      QA_LLM_TIMEOUT_SECONDS: "60"
+      QA_LLM_TIMEOUT_SECONDS: "120"
       # API key — set QA_LLM_API_KEY in your shell or a .env file at the repo root.
-      QA_LLM_API_KEY: ${QA_LLM_API_KEY:-replace-me}
+      QA_LLM_API_KEY: ${QA_LLM_API_KEY:-}
       # Base URL — leave blank to use OpenAI directly.
       # Set this to use OpenRouter or another compatible provider, e.g.:
       #   QA_LLM_BASE_URL: https://openrouter.ai/api/v1

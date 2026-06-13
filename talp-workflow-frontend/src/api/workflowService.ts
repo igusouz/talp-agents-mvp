@@ -6,7 +6,6 @@ import type {
   ComplianceAnalysisDto,
   ComplianceGapDto,
   ComplianceRequirementDto,
-  FinalWorkflowResponseDto,
   InvestAnalysisDto,
   InvestCriterionAssessmentDto,
   UserStoryInputDto,
@@ -30,7 +29,6 @@ import type {
   WorkflowCreateResponse,
   WorkflowDraft,
   WorkflowStateResponse,
-  FinalWorkflowResponse,
 } from '@/api/models/workflow'
 
 const WORKFLOW_BASE_PATH = '/workflows'
@@ -170,16 +168,6 @@ function mapWorkflowStateResponse(model: WorkflowStateResponseDto): WorkflowStat
   }
 }
 
-function mapFinalWorkflowResponse(model: FinalWorkflowResponseDto): FinalWorkflowResponse {
-  return {
-    workflowId: model.workflow_id,
-    stage: model.stage,
-    approvedStory: toUserStory(model.approved_story),
-    bddAnalysis: toBddAnalysis(model.bdd_analysis),
-    correlationId: model.correlation_id ?? null,
-  }
-}
-
 export class WorkflowService {
   constructor(private readonly apiClient = createApiClient()) {}
 
@@ -205,9 +193,9 @@ export class WorkflowService {
     }
   }
 
-  async submitApprovedStory(workflowId: string, request: ApproveStoryRequest): Promise<FinalWorkflowResponse> {
+  async submitApprovedStory(workflowId: string, request: ApproveStoryRequest): Promise<WorkflowStateResponse> {
     try {
-      const response = await this.apiClient.request<FinalWorkflowResponseDto>(`${WORKFLOW_BASE_PATH}/${workflowId}/approval`, {
+      const response = await this.apiClient.request<WorkflowStateResponseDto>(`${WORKFLOW_BASE_PATH}/${workflowId}/approval`, {
         method: 'POST',
         body: {
           approved_story: toUserStoryDto(request.approvedStory),
@@ -217,7 +205,7 @@ export class WorkflowService {
         } satisfies ApprovedStoryRequestDto,
       })
 
-      return mapFinalWorkflowResponse(response)
+      return mapWorkflowStateResponse(response)
     } catch (error) {
       throw normalizeApiError(error)
     }

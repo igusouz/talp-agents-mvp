@@ -63,6 +63,36 @@ class TestQAAnalysisChain:
             assert response.summary
             assert len(response.bdd_scenarios) > 0
 
+    @patch("app.chains.qa_chain.ChatOpenAI")
+    def test_chain_invoke_accepts_parsed_wrapper(
+        self,
+        mock_llm_class: MagicMock,
+        mock_settings: Settings,
+        mock_qa_response: QAAnalysisResponse,
+    ) -> None:
+        """Chain unwraps provider-specific responses that expose a parsed attribute."""
+
+        class ParsedWrapper:
+            def __init__(self, parsed: QAAnalysisResponse) -> None:
+                self.parsed = parsed
+
+        mock_llm = MagicMock()
+        mock_llm.with_structured_output.return_value = MagicMock()
+        mock_llm_class.return_value = mock_llm
+
+        mock_chain = MagicMock()
+        mock_chain.invoke.return_value = ParsedWrapper(mock_qa_response)
+
+        with patch("app.chains.qa_chain.ChatPromptTemplate") as mock_prompt:
+            mock_prompt.from_messages.return_value = MagicMock()
+            chain = QAAnalysisChain(settings=mock_settings)
+            chain._chain = mock_chain
+
+            response = chain.invoke(QARequest(story="As a user, I want to reset my password"))
+
+            assert isinstance(response, QAAnalysisResponse)
+            assert response.summary == mock_qa_response.summary
+
     def test_format_acceptance_criteria_empty(self) -> None:
         """Empty criteria list returns default message."""
         from app.chains.qa_chain import _format_acceptance_criteria

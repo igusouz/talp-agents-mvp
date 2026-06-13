@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import asyncio
+import logging
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
@@ -12,7 +14,6 @@ from app.schemas.invest import InvestAgentRequest, InvestAgentResponse
 from app.schemas.qa import QARequest
 from app.schemas.workflow import (
     ApprovedStoryRequest,
-    FinalWorkflowResponse,
     UserStoryInput,
     WorkflowCreateRequest,
     WorkflowCreateResponse,
@@ -37,6 +38,8 @@ class WorkflowService:
     def __init__(self, registry: AgentClientRegistry) -> None:
         self._registry = registry
         self._workflows: dict[str, WorkflowRecord] = {}
+        self._approval_tasks: dict[str, asyncio.Task[None]] = {}
+        self._logger = logging.getLogger(__name__)
 
     async def start_workflow(self, request: WorkflowCreateRequest) -> WorkflowCreateResponse:
         workflow_id = uuid4().hex
@@ -95,25 +98,54 @@ class WorkflowService:
         self,
         workflow_id: str,
         request: ApprovedStoryRequest,
-    ) -> FinalWorkflowResponse:
+    ) -> WorkflowStateResponse:
         record = self._require_workflow(workflow_id)
 
-        story_text = self._render_story_text(request.approved_story)
-        context = RequestContext(correlation_id=record.correlation_id)
-        bdd_response = await self._registry.bdd.send(QARequest(story=story_text), context=context)
+        running_task = self._approval_tasks.get(workflow_id)
+        if running_task is not None and not running_task.done():
+            return self.get_workflow_state(workflow_id)
+
+        if record.stage == "bdd_done" and record.bdd_response is not None:
+            return self.get_workflow_state(workflow_id)
 
         record.approved_story = request.approved_story
-        record.bdd_response = bdd_response
-        record.stage = "bdd_done"
+        record.bdd_response = None
+        record.stage = "approved"
         record.updated_at = datetime.now(timezone.utc)
+        self._schedule_bdd_analysis(workflow_id)
 
-        return FinalWorkflowResponse(
-            workflow_id=record.workflow_id,
-            stage="bdd_done",
-            approved_story=request.approved_story,
-            bdd_analysis=bdd_response,
-            correlation_id=record.correlation_id,
-        )
+        return self.get_workflow_state(workflow_id)
+
+    def _schedule_bdd_analysis(self, workflow_id: str) -> None:
+        running_task = self._approval_tasks.get(workflow_id)
+        if running_task is not None and not running_task.done():
+            return
+
+        task = asyncio.create_task(self._run_bdd_analysis(workflow_id))
+        self._approval_tasks[workflow_id] = task
+
+    async def _run_bdd_analysis(self, workflow_id: str) -> None:
+        try:
+            record = self._require_workflow(workflow_id)
+            if record.approved_story is None:
+                raise ValueError(f"Workflow '{workflow_id}' has no approved story")
+
+            story_text = self._render_story_text(record.approved_story)
+            context = RequestContext(correlation_id=record.correlation_id)
+            bdd_response = await self._registry.bdd.send(QARequest(story=story_text), context=context)
+
+            record = self._require_workflow(workflow_id)
+            record.bdd_response = bdd_response
+            record.stage = "bdd_done"
+            record.updated_at = datetime.now(timezone.utc)
+        except Exception:
+            record = self._workflows.get(workflow_id)
+            if record is not None:
+                record.stage = "failed"
+                record.updated_at = datetime.now(timezone.utc)
+            self._logger.exception("bdd_analysis_failed", extra={"workflow_id": workflow_id})
+        finally:
+            self._approval_tasks.pop(workflow_id, None)
 
     def get_bdd_results(self, workflow_id: str) -> dict[str, Any]:
         record = self._require_workflow(workflow_id)

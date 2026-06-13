@@ -9,6 +9,7 @@ import { useWorkflowState } from '@/state/workflow'
 import { buildUserStoryDraft, getApiErrorMessage, hasUserStoryChanged, isStoryValid, splitAcceptanceCriteria, userStoryToDraftFields } from '@/features/workflow/workflowUtils'
 
 type StoryFieldErrors = Partial<Record<'title' | 'description' | 'acceptanceCriteriaText', string>>
+const BDD_POLL_INTERVAL_MS = 2000
 
 function toWorkflowError(error: unknown) {
   return {
@@ -183,7 +184,7 @@ export function HumanReviewPage() {
       workflow.approveStory(currentDraft, new Date().toISOString())
       workflow.markBddProcessing(new Date().toISOString())
 
-      const response = await service.submitApprovedStory(workflowId, {
+      const acceptedState = await service.submitApprovedStory(workflowId, {
         approvedStory: currentDraft,
         reviewerId: 'frontend-human-review',
         reviewNotes: modified ? 'Approved after human edits.' : 'Approved without edits.',
@@ -192,8 +193,19 @@ export function HumanReviewPage() {
         },
       })
 
-      workflow.approveStory(response.approvedStory, new Date().toISOString())
-      workflow.completeWorkflow(response.bddAnalysis, new Date().toISOString())
+      workflow.approveStory(acceptedState.approvedStory ?? currentDraft, new Date().toISOString())
+
+      let latestState = acceptedState
+      while (latestState.bddAnalysis == null) {
+        await new Promise((resolve) => window.setTimeout(resolve, BDD_POLL_INTERVAL_MS))
+        latestState = await service.retrieveWorkflowState(workflowId)
+
+        if (latestState.stage === 'failed') {
+          throw new Error('BDD processing failed upstream.')
+        }
+      }
+
+      workflow.completeWorkflow(latestState.bddAnalysis, new Date().toISOString())
       navigate(`/workflows/${workflowId}/final`, { replace: true })
     } catch (error) {
       workflow.failWorkflow(toWorkflowError(error), new Date().toISOString())

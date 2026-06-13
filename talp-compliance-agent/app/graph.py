@@ -16,7 +16,6 @@ from app.services.catalog_repository import CatalogRepository
 from app.services.dependency_analyzer import DependencyAnalyzer
 from app.services.gap_analyzer import GapAnalyzer
 from app.services.invest_result_adapter import InvestResultAdapter
-from app.services.persistence_service import PersistenceService
 from app.services.rule_matcher import RuleMatcher
 
 
@@ -268,20 +267,6 @@ def run_compliance_graph(request: ComplianceAnalysisRequest) -> ComplianceAnalys
             "blocking_rules": [r["rule_id"] for r in blocking_rules],
         },
     )
-
-    # --- Persistência da execução ---
-    try:
-        import json as _json
-
-        invest_result_json = _json.dumps(request.invest_result.model_dump())
-        PersistenceService.save_analysis(
-            response=response,
-            user_story=investment_text,
-            invest_result_json=invest_result_json,
-            can_continue_to_bdd=can_continue,
-        )
-    except Exception as e:
-        print(f"[WARN] Não foi possível persistir análise: {e}")
 
     return response
 

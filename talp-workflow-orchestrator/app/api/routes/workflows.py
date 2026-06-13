@@ -5,7 +5,6 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from app.core.exceptions import AgentClientError, AgentUpstreamHttpError
 from app.schemas.workflow import (
     ApprovedStoryRequest,
-    FinalWorkflowResponse,
     WorkflowCreateRequest,
     WorkflowCreateResponse,
     WorkflowStateResponse,
@@ -43,20 +42,20 @@ def get_workflow_state(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
 
 
-@router.post("/{workflow_id}/approval", response_model=FinalWorkflowResponse)
+@router.post(
+    "/{workflow_id}/approval",
+    response_model=WorkflowStateResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
 async def submit_approval(
     workflow_id: str,
     payload: ApprovedStoryRequest,
     service: WorkflowService = Depends(get_workflow_service),
-) -> FinalWorkflowResponse:
+) -> WorkflowStateResponse:
     try:
         return await service.submit_approval(workflow_id, payload)
     except KeyError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
-    except AgentUpstreamHttpError as exc:
-        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
-    except AgentClientError as exc:
-        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=str(exc)) from exc
 
 
 @router.get("/{workflow_id}/bdd-results")
