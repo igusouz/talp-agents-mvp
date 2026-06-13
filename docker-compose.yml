@@ -1,0 +1,83 @@
+services:
+  workflow-frontend:
+    build:
+      context: ./talp-workflow-frontend
+    container_name: talp-workflow-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_APP_NAME: TALP Workflow Frontend
+      VITE_APP_VERSION: 0.1.0
+      VITE_ORCHESTRATOR_API_BASE_URL: http://localhost:8000/api/v1
+      VITE_REQUEST_TIMEOUT_MS: "30000"
+      VITE_ENABLE_MOCKS: "false"
+    depends_on:
+      - workflow-orchestrator
+
+  workflow-orchestrator:
+    build:
+      context: ./talp-workflow-orchestrator
+    container_name: talp-workflow-orchestrator
+    ports:
+      - "8000:8000"
+    environment:
+      ORCH_APP_NAME: Workflow Orchestrator
+      ORCH_APP_VERSION: 0.1.0
+      ORCH_API_PREFIX: /api/v1
+      ORCH_LOG_LEVEL: INFO
+      ORCH_INVEST_AGENT_BASE_URL: http://invest-agent:8000/api/v1/invest
+      ORCH_COMPLIANCE_AGENT_BASE_URL: http://compliance-agent:8000/api/v1/compliance
+      ORCH_BDD_AGENT_BASE_URL: http://bdd-agent:8000/api/v1/qa
+    depends_on:
+      - invest-agent
+      - compliance-agent
+      - bdd-agent
+
+  invest-agent:
+    build:
+      context: ./talp-invest-agent
+    container_name: talp-invest-agent
+    ports:
+      - "8001:8000"
+    environment:
+      TALP_BACKEND: heuristic
+      TALP_LLM_MODEL: gemini-2.5-flash
+      TALP_AUDIT_LOG_DIR: /app/logs/audit
+    volumes:
+      - ./talp-invest-agent/logs:/app/logs
+
+  compliance-agent:
+    build:
+      context: ./talp-compliance-agent
+    container_name: talp-compliance-agent
+    ports:
+      - "8002:8000"
+    environment:
+      ENVIRONMENT: development
+      DEBUG: "false"
+      DATABASE_URL: sqlite:///./storage/db/compliance_agent.db
+      CATALOG_RULES_PATH: data/catalog_rules_v1.csv
+      AUDIT_LOG_PATH: storage/audit/compliance_runs.jsonl
+      AGENT_BACKEND: heuristic
+    volumes:
+      - ./talp-compliance-agent/data:/app/data
+      - ./talp-compliance-agent/storage:/app/storage
+
+  bdd-agent:
+    build:
+      context: ./talp-bdd-agent
+    container_name: talp-bdd-agent
+    ports:
+      - "8003:8000"
+    environment:
+      QA_APP_NAME: BDD QA Agent
+      QA_APP_VERSION: 0.1.0
+      QA_API_PREFIX: /api/v1
+      QA_LOG_LEVEL: INFO
+      QA_LLM_MODEL: gpt-4o-mini
+      QA_LLM_TEMPERATURE: "0.0"
+      QA_LLM_API_KEY: ${QA_LLM_API_KEY:-replace-me}
+
+networks:
+  default:
+    name: talp-agents-network

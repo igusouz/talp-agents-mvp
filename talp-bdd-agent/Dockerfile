@@ -17,11 +17,10 @@ COPY pyproject.toml pytest.ini README.md .env.example ./
 
 # Copy application code
 COPY app/ ./app/
-COPY tests/ ./tests/
 
-# Upgrade pip and install package (including dev extras for convenience)
+# Upgrade pip and install runtime package
 RUN pip install --upgrade pip setuptools wheel
-RUN pip install --no-cache-dir .[dev]
+RUN pip install --no-cache-dir .
 
 # Create a non-root user
 RUN groupadd --gid 1000 appuser \

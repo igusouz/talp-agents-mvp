@@ -102,8 +102,8 @@ export interface WorkflowCreateResponse {
   workflowId: UUID
   stage: WorkflowStage
   originalStory: UserStory
-  investAnalysis: InvestAnalysis
-  complianceAnalysis: ComplianceAnalysis
+  investAnalysis: InvestAnalysis | null
+  complianceAnalysis: ComplianceAnalysis | null
   nextAction: 'review'
   correlationId?: string | null
 }

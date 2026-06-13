@@ -3,6 +3,7 @@ Serviço: Catalog Repository - Carregamento e gerenciamento de regras
 """
 
 import csv
+import os
 from pathlib import Path
 from typing import Optional
 
@@ -12,14 +13,15 @@ from app.schemas.models import CatalogRule
 class CatalogRepository:
     """Repositório para carregar e gerenciar catálogo de regras."""
 
-    def __init__(self, catalog_path: str = "data/catalog_rules_v1.csv"):
+    def __init__(self, catalog_path: str | None = None):
         """
         Inicializar repositório com caminho para catálogo.
 
         Args:
             catalog_path: Caminho relativo ou absoluto para o arquivo CSV
         """
-        self.catalog_path = Path(catalog_path)
+        resolved_path = catalog_path or os.getenv("CATALOG_RULES_PATH", "data/catalog_rules_v1.csv")
+        self.catalog_path = Path(resolved_path)
         self._rules_cache: Optional[list[CatalogRule]] = None
 
     def load_rules(self) -> list[CatalogRule]:

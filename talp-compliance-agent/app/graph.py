@@ -3,7 +3,7 @@ Grafo do LangGraph - Fluxo de Análise de Compliance
 """
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.schemas.models import (
     ComplianceAnalysisRequest,
@@ -85,7 +85,7 @@ def can_continue_to_bdd(
         return False
 
     # Condição 2: critério testable está failed
-    if "Testable" in invest_context.failed:
+    if "testable" in {criterion.lower() for criterion in invest_context.failed}:
         return False
 
     # Condição 3: há lacuna crítica relacionada a regra bloqueante
@@ -255,7 +255,7 @@ def run_compliance_graph(request: ComplianceAnalysisRequest) -> ComplianceAnalys
         compliance_gaps=gaps_as_objects,
         requirements=compliance_requirements,
         summary=summary,
-        timestamp=datetime.now(),
+        timestamp=datetime.now(timezone.utc),
         metadata={
             "invest_context": {
                 "overall_status": invest_context.overall_status,

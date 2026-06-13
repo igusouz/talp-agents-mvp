@@ -47,7 +47,13 @@ modelo:
 - Structured output
 - Human-auditable trace
 
-## Execucao
+## Execucao da API
+
+```powershell
+uv run uvicorn app.api.main:app --host 0.0.0.0 --port 8000
+```
+
+## Execucao CLI
 
 ```powershell
 uv run --extra dev pytest
@@ -71,13 +77,13 @@ Construa a imagem:
 docker build -t talp-invest-agent .
 ```
 
-Execute sem chamada externa ao modelo:
+Execute a API sem chamada externa ao modelo:
 
 ```powershell
-docker run --rm talp-invest-agent --backend heuristic "Como administrador, quero melhorar o sistema."
+docker run --rm -p 8001:8000 -e TALP_BACKEND=heuristic talp-invest-agent
 ```
 
-Execute com LLM usando variaveis de ambiente:
+Execute o CLI com LLM usando variaveis de ambiente:
 
 ```powershell
 docker run --rm --env-file .env -v "${PWD}/logs:/app/logs" talp-invest-agent "Como cliente, quero redefinir minha senha para recuperar acesso a minha conta."

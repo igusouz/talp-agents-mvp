@@ -27,8 +27,13 @@ class ReportGenerator(Protocol):
         ...
 
 
-def _gemini_api_key() -> str | None:
-    return os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+def _gemini_api_key() -> str:
+    api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        raise ValueError(
+            "GOOGLE_API_KEY or GEMINI_API_KEY must be set when TALP_BACKEND=llm"
+        )
+    return api_key
 
 
 def _build_gemini_chat_model(model_name: str, temperature: float):
@@ -43,9 +48,7 @@ def _build_gemini_chat_model(model_name: str, temperature: float):
         "model": model_name,
         "temperature": temperature,
     }
-    api_key = _gemini_api_key()
-    if api_key:
-        kwargs["google_api_key"] = api_key
+    kwargs["google_api_key"] = _gemini_api_key()
     return ChatGoogleGenerativeAI(**kwargs)
 
 

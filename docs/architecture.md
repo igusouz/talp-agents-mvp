@@ -43,7 +43,7 @@ Responsibilities:
 
 The orchestrator lives in [talp-workflow-orchestrator/](../talp-workflow-orchestrator/) and provides the communication layer between the frontend and the downstream agents.
 
-The current repository implements the orchestrator as a typed client and contract layer. It is designed to sit behind a future FastAPI shell, but the present codebase focuses on HTTP client abstractions, retries, timeouts, logging, and request/response validation.
+The current repository implements the orchestrator as a FastAPI runtime plus a typed communication layer. It exposes the workflow API consumed by the frontend and manages the downstream HTTPX clients for the Invest, Compliance, and BDD services.
 
 Responsibilities:
 
@@ -56,7 +56,7 @@ Responsibilities:
 
 ### Invest Agent
 
-The Invest Agent lives in [talp-invest-agent/](../talp-invest-agent/) and is currently implemented as a CLI-driven LangGraph workflow rather than a REST service.
+The Invest Agent lives in [talp-invest-agent/](../talp-invest-agent/) and is implemented as a LangGraph workflow with both a CLI entrypoint and a FastAPI wrapper.
 
 Responsibilities:
 
@@ -65,7 +65,7 @@ Responsibilities:
 - Generate classification and optional report content for poor stories.
 - Record prompt and model metadata for traceability.
 
-The current code uses a Google GenAI-backed model integration rather than an HTTP API surface.
+The current code uses a Google GenAI-backed model integration behind a local REST API surface.
 
 ### Compliance Agent
 

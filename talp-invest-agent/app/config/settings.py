@@ -11,6 +11,7 @@ class Settings:
     prompt_dir: Path
     audit_log_dir: Path
     llm_model: str
+    backend: str
 
 
 def load_settings(project_root: Path | None = None) -> Settings:
@@ -23,4 +24,5 @@ def load_settings(project_root: Path | None = None) -> Settings:
         prompt_dir=root / "prompts",
         audit_log_dir=audit_dir,
         llm_model=os.getenv("TALP_LLM_MODEL", "gemini-2.5-flash"),
+        backend=os.getenv("TALP_BACKEND", "llm"),
     )

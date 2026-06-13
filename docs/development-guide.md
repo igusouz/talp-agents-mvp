@@ -122,6 +122,6 @@ A pragmatic target is high coverage for pure logic and meaningful contract cover
 
 ## Practical Notes
 
-- The Invest Agent is CLI-first, so changes that turn it into an HTTP service should be documented and tested carefully.
+- The Invest Agent now supports both CLI and HTTP execution, so contract changes should be documented and tested carefully in both entrypoints.
 - The Compliance Agent persists data and can be affected by local storage state, so reset or isolate the database in tests.
 - The frontend should never talk to downstream agents directly; it should go through the orchestrator.

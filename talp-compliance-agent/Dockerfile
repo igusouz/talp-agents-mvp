@@ -13,7 +13,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY . .
 
 RUN python -m pip install --upgrade pip \
-    && pip install --no-cache-dir -e .
+    && pip install --no-cache-dir -e . \
+    && mkdir -p /app/storage/db /app/storage/audit /app/storage/logs \
+    && groupadd --gid 1000 appuser \
+    && useradd --uid 1000 --gid 1000 -m appuser \
+    && chown -R appuser:appuser /app
+
+USER appuser
 
 EXPOSE 8000
 

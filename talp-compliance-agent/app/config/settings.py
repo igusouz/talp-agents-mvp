@@ -5,10 +5,16 @@ Configurações da aplicação
 from pydantic_settings import BaseSettings
 
 
-from pydantic import Extra
+from pydantic_settings import SettingsConfigDict
 
 class Settings(BaseSettings):
     """Configurações da aplicação."""
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=False,
+        extra="allow",
+    )
 
     # Ambiente
     environment: str = "development"
@@ -23,15 +29,14 @@ class Settings(BaseSettings):
     # Banco de dados
     database_url: str = "sqlite:///./storage/db/compliance_agent.db"
 
+    # Recursos de análise
+    catalog_rules_path: str = "data/catalog_rules_v1.csv"
+    audit_log_path: str = "storage/audit/compliance_runs.jsonl"
+    agent_backend: str = "heuristic"
+
     # Logging
     log_level: str = "INFO"
     log_file: str = "./storage/logs/app.log"
-
-
-    class Config:
-        env_file = ".env"
-        case_sensitive = False
-        extra = Extra.allow
 
 
 settings = Settings()

@@ -5,7 +5,7 @@ from typing import Any, Literal
 
 from pydantic import Field, field_validator
 
-from app.schemas.common import RequestContext, StrictModel
+from app.schemas.common import ResponseModel, StrictModel
 
 
 CriterionName = Literal[
@@ -41,7 +41,7 @@ class InvestAgentRequest(StrictModel):
         return cleaned
 
 
-class AgentInput(StrictModel):
+class AgentInput(ResponseModel):
     user_story_text: str = Field(min_length=1, max_length=10000)
 
     @field_validator("user_story_text")
@@ -53,7 +53,7 @@ class AgentInput(StrictModel):
         return cleaned
 
 
-class CriterionAssessment(StrictModel):
+class CriterionAssessment(ResponseModel):
     status: CriterionStatus
     evidence: list[str] = Field(default_factory=list)
     reason: str = Field(min_length=1)
@@ -64,7 +64,7 @@ class CriterionAssessment(StrictModel):
         return [item.strip() for item in value if item.strip()]
 
 
-class InvestAnalysis(StrictModel):
+class InvestAnalysis(ResponseModel):
     independent: CriterionAssessment
     negotiable: CriterionAssessment
     valuable: CriterionAssessment
@@ -79,44 +79,44 @@ class InvestAnalysis(StrictModel):
         return {criterion: getattr(self, criterion) for criterion in CRITERIA}
 
 
-class Classification(StrictModel):
+class Classification(ResponseModel):
     category: StoryCategory
     rule_applied: str
     failed_criteria: list[CriterionName]
 
 
-class ReportProblem(StrictModel):
+class ReportProblem(ResponseModel):
     criterion: CriterionName
     problem: str = Field(min_length=1)
     evidence: list[str] = Field(default_factory=list)
     explanation: str = Field(min_length=1)
 
 
-class BadStoryReport(StrictModel):
+class BadStoryReport(ResponseModel):
     problems: list[ReportProblem]
 
 
-class PromptRecord(StrictModel):
+class PromptRecord(ResponseModel):
     id: str
     version: str
     path: str
     sha256: str
 
 
-class AuditInfo(StrictModel):
+class AuditInfo(ResponseModel):
     prompt_versions: dict[str, str]
     prompt_hashes: dict[str, str]
     model: dict[str, Any]
     created_at_utc: datetime
 
 
-class FinalResult(StrictModel):
+class FinalResult(ResponseModel):
     step_1_invest_analysis: InvestAnalysis
     step_2_classification: Classification
     step_3_report: BadStoryReport | None = None
 
 
-class InvestAgentResponse(StrictModel):
+class InvestAgentResponse(ResponseModel):
     execution_id: str
     schema_version: str
     input: AgentInput

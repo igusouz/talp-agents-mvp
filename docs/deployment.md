@@ -13,17 +13,18 @@ The repository uses environment variables per service. The examples below match 
 
 ### Invest Agent
 
-The Invest Agent is CLI-based and reads the following environment variables:
+The Invest Agent exposes a FastAPI API and also supports CLI execution. It reads the following environment variables:
 
 ```env
 TALP_AUDIT_LOG_DIR=logs/audit
 TALP_LLM_MODEL=gemini-2.5-flash
+TALP_BACKEND=llm
 ```
 
 ### Compliance Agent
 
 ```env
-APP_ENV=development
+ENVIRONMENT=development
 DATABASE_URL=sqlite:///./storage/db/compliance_agent.db
 CATALOG_RULES_PATH=data/catalog_rules_v1.csv
 AUDIT_LOG_PATH=storage/audit/compliance_runs.jsonl
@@ -93,7 +94,14 @@ Suggested local file layout:
 
 #### Invest Agent
 
-The Invest Agent is currently CLI-first.
+Run the API service:
+
+```bash
+cd talp-invest-agent
+uvicorn app.api.main:app --host 0.0.0.0 --port 8001 --reload
+```
+
+Optional CLI usage:
 
 ```bash
 cd talp-invest-agent
@@ -116,7 +124,10 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 #### Workflow Orchestrator
 
-The orchestrator currently provides the typed communication layer and service contracts. The repository does not ship a standalone runtime server for it yet, so treat this as the integration boundary that a future FastAPI shell will expose.
+```bash
+cd talp-workflow-orchestrator
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
 
 ### Frontend startup
 
@@ -134,51 +145,41 @@ Recommended ports:
 
 - Frontend: `5173`
 - Orchestrator: `8000`
-- Compliance API: `8000` in its own container or alternate local port if launched alongside another API
-- BDD API: `8000` in its own container or alternate local port if launched alongside another API
+- Invest API: `8001`
+- Compliance API: `8002`
+- BDD API: `8003`
 
 ## Docker Execution
 
 ### Build commands
 
 ```bash
-cd talp-compliance-agent
-docker compose build
-
-cd talp-bdd-agent
+cd .
 docker compose build
 ```
 
 ### Startup commands
 
 ```bash
-cd talp-compliance-agent
-docker compose up -d
-
-cd talp-bdd-agent
+cd .
 docker compose up -d
 ```
 
 ### Shutdown commands
 
 ```bash
-cd talp-compliance-agent
-docker compose down
-
-cd talp-bdd-agent
+cd .
 docker compose down
 ```
 
 ### Rebuild procedures
 
 ```bash
-cd talp-compliance-agent
+cd .
 docker compose down
 docker compose build --no-cache
 docker compose up -d
 ```
-
-Repeat the same sequence for the BDD agent.
 
 ### Docker architecture
 
@@ -190,6 +191,7 @@ flowchart LR
 
   subgraph API_Net[Docker Network]
     ORCH[Workflow Orchestrator]
+    INV[TALP Invest Agent]
     COMP[TALP Compliance Agent]
     BDD[TALP BDD QA Agent]
   end
@@ -201,8 +203,10 @@ flowchart LR
   end
 
   FE --> ORCH
+  ORCH --> INV
   ORCH --> COMP
   ORCH --> BDD
+  INV --> AUD
   COMP --> SQL
   COMP --> CAT
   COMP --> AUD

@@ -149,8 +149,8 @@ function mapWorkflowCreateResponse(model: WorkflowCreateResponseDto): WorkflowCr
     workflowId: model.workflow_id,
     stage: mapWorkflowStage(model.stage),
     originalStory: toUserStory(model.original_story),
-    investAnalysis: toInvestAnalysis(model.invest_analysis),
-    complianceAnalysis: toComplianceAnalysis(model.compliance_analysis),
+    investAnalysis: model.invest_analysis ? toInvestAnalysis(model.invest_analysis) : null,
+    complianceAnalysis: model.compliance_analysis ? toComplianceAnalysis(model.compliance_analysis) : null,
     nextAction: model.next_action,
     correlationId: model.correlation_id ?? null,
   }

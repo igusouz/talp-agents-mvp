@@ -27,7 +27,7 @@ flowchart LR
 
 1. Set up Python 3.11+, Node.js 20+, Docker, and Docker Compose.
 2. Configure environment variables using the examples in [docs/deployment.md](docs/deployment.md).
-3. Start the backend services and frontend in development mode, or launch the full stack with Docker Compose.
+3. Launch the full stack from the repository root with `docker compose up --build`, or run the services independently in development mode.
 4. Open the frontend, submit a user story, review the analyses, approve the edited story, and inspect the final BDD output.
 
 ## Documentation Index

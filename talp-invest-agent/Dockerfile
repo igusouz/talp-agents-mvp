@@ -10,13 +10,13 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-COPY pyproject.toml uv.lock README.md ./
-RUN uv sync --frozen --no-dev --no-install-project
+COPY pyproject.toml README.md ./
+RUN uv sync --no-dev --no-install-project
 
 COPY app ./app
 COPY prompts ./prompts
 
-RUN uv sync --frozen --no-dev \
+RUN uv sync --no-dev \
     && mkdir -p /app/logs/audit \
     && groupadd --system app \
     && useradd --system --gid app --home-dir /app app \
@@ -26,5 +26,4 @@ USER app
 
 ENV PATH="/app/.venv/bin:${PATH}"
 
-ENTRYPOINT ["python", "-m", "app.main"]
-CMD ["--help"]
+CMD ["uvicorn", "app.api.main:app", "--host", "0.0.0.0", "--port", "8000"]

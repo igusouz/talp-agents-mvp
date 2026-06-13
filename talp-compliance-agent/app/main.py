@@ -2,11 +2,15 @@
 TALP Compliance Agent - Aplicação principal FastAPI.
 """
 
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import catalog, compliance, compliance_runs, health
 from app.db.init_db import init_db
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="TALP Compliance Agent API",
@@ -32,11 +36,15 @@ app.include_router(catalog.router)
 @app.on_event("startup")
 async def startup_event() -> None:
     """Inicializa recursos mínimos da aplicação."""
-    init_db()
-    print("TALP Compliance Agent iniciado")
+    try:
+        init_db()
+        logger.info("TALP Compliance Agent iniciado")
+    except Exception:
+        logger.exception("Falha ao inicializar o banco de dados")
+        raise
 
 
 @app.on_event("shutdown")
 async def shutdown_event() -> None:
     """Finaliza a aplicação."""
-    print("TALP Compliance Agent desligado")
+    logger.info("TALP Compliance Agent desligado")

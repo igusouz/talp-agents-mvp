@@ -13,7 +13,7 @@ from app.services.catalog_repository import CatalogRepository
 class RuleMatcher:
     """Matchear regras de compliance entre User Stories e catálogo."""
 
-    def __init__(self, catalog_path: str = "data/catalog_rules_v1.csv"):
+    def __init__(self, catalog_path: str | None = None):
         """
         Inicializar matcher com catálogo de regras.
 

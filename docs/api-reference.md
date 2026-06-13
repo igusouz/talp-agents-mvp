@@ -10,7 +10,7 @@ This document describes the available APIs in the repository.
 
 ## Workflow Orchestrator API
 
-This section documents the workflow contract consumed by the frontend and the orchestrator client layer. The current repository does not yet ship a standalone orchestrator runtime server, so treat these routes as the intended HTTP contract for the platform.
+This section documents the workflow contract consumed by the frontend and exposed by the orchestrator runtime server.
 
 ### Base URL
 
@@ -18,7 +18,7 @@ This section documents the workflow contract consumed by the frontend and the or
 
 ### Start Workflow
 
-`POST /workflows/stories`
+`POST /workflows`
 
 Request payload:
 
@@ -189,11 +189,56 @@ Status codes:
 
 ### Base URL
 
-The current repository does not expose an HTTP API for the Invest Agent.
+`http://localhost:8001/api/v1/invest`
 
-### Available interface
+### Analyze Story
 
-The Invest Agent is currently a CLI-first service:
+`POST /analyze`
+
+Request payload:
+
+```json
+{
+  "user_story_text": "Title: Password reset\n\nAs a customer, I want to reset my password.\n\nAcceptance criteria:\n- A reset link is sent to the email"
+}
+```
+
+Response payload:
+
+```json
+{
+  "execution_id": "...",
+  "schema_version": "...",
+  "input": {
+    "user_story_text": "..."
+  },
+  "result": {
+    "step_1_invest_analysis": {
+      "independent": { "status": "pass", "evidence": [], "reason": "..." }
+    },
+    "step_2_classification": {
+      "category": "boa",
+      "rule_applied": "all criteria pass",
+      "failed_criteria": []
+    },
+    "step_3_report": null
+  },
+  "audit": {
+    "prompt_versions": {},
+    "prompt_hashes": {},
+    "model": {},
+    "created_at_utc": "2026-06-11T10:30:00Z"
+  }
+}
+```
+
+### Health
+
+`GET /health`
+
+### CLI Interface
+
+The Invest Agent also supports a direct CLI interface:
 
 `python -m app.main <user_story> --backend llm|heuristic`
 
@@ -204,11 +249,6 @@ Typical output is a JSON serialized `FinalOutput` object that includes:
 - `input`
 - `result`
 - `audit`
-
-### Status
-
-- No REST endpoints are implemented in the repository today.
-- The Workflow Orchestrator currently documents an HTTP target for Invest Agent integration, but that route is not present in the Invest Agent codebase yet.
 
 ## Compliance Agent APIs
 

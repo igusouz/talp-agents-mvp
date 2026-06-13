@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from functools import lru_cache
 
-from pydantic import Field
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -27,6 +27,12 @@ class Settings(BaseSettings):
     llm_api_key: str | None = Field(default=None, validation_alias="QA_LLM_API_KEY")
     llm_temperature: float = Field(default=0.0, validation_alias="QA_LLM_TEMPERATURE")
     llm_timeout_seconds: int = Field(default=60, validation_alias="QA_LLM_TIMEOUT_SECONDS")
+
+    @model_validator(mode="after")
+    def validate_llm_credentials(self) -> "Settings":
+        if not self.llm_api_key:
+            raise ValueError("QA_LLM_API_KEY must be set")
+        return self
 
 
 @lru_cache(maxsize=1)

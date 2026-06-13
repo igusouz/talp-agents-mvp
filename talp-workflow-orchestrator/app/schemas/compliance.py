@@ -5,7 +5,7 @@ from typing import Any, Literal
 
 from pydantic import ConfigDict, Field, field_validator
 
-from app.schemas.common import StrictModel
+from app.schemas.common import ResponseModel, StrictModel
 
 
 class InvestCriterionResult(StrictModel):
@@ -35,7 +35,7 @@ class InvestContext(StrictModel):
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
-class CatalogRule(StrictModel):
+class CatalogRule(ResponseModel):
     rule_id: str
     name: str
     domain: str
@@ -48,13 +48,13 @@ class CatalogRule(StrictModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class RuleDependency(StrictModel):
+class RuleDependency(ResponseModel):
     rule_id: str
     depends_on: list[str]
     description: str | None = None
 
 
-class DetectedRule(StrictModel):
+class DetectedRule(ResponseModel):
     rule_id: str
     name: str
     domain: str
@@ -64,7 +64,7 @@ class DetectedRule(StrictModel):
     dependencies: list[RuleDependency] = Field(default_factory=list)
 
 
-class ComplianceGap(StrictModel):
+class ComplianceGap(ResponseModel):
     rule_id: str
     rule_name: str
     severity: Literal["critical", "high", "medium", "low"]
@@ -73,7 +73,7 @@ class ComplianceGap(StrictModel):
     blocking: bool
 
 
-class ComplianceRequirement(StrictModel):
+class ComplianceRequirement(ResponseModel):
     requirement_id: str
     description: str
     status: Literal["satisfied", "gap", "pending"]
@@ -93,7 +93,7 @@ class ComplianceAnalysisRequest(StrictModel):
         return cleaned
 
 
-class ComplianceAnalysisResponse(StrictModel):
+class ComplianceAnalysisResponse(ResponseModel):
     analysis_id: str
     investment_id: str
     status: Literal["compliant", "non_compliant", "partial"]

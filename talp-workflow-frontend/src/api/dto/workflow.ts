@@ -101,8 +101,8 @@ export interface WorkflowCreateResponseDto {
   workflow_id: string
   stage: WorkflowStageDto
   original_story: UserStoryInputDto
-  invest_analysis: InvestAnalysisDto
-  compliance_analysis: ComplianceAnalysisDto
+  invest_analysis: InvestAnalysisDto | null
+  compliance_analysis: ComplianceAnalysisDto | null
   next_action: 'review'
   correlation_id?: string | null
 }

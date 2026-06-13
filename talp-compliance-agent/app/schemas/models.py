@@ -2,7 +2,7 @@
 Schemas de requisição e resposta - Pydantic V2
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -51,7 +51,7 @@ class InvestContext(BaseModel):
     detected_problems: list[str] = Field(default_factory=list)
     recommendations: list[str] = Field(default_factory=list)
     invest_result: Optional[InvestResult] = None
-    timestamp: datetime = Field(default_factory=datetime.now)
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 # ============================================================================
@@ -141,7 +141,7 @@ class ComplianceAnalysisResponse(BaseModel):
     compliance_gaps: list[ComplianceGap]
     requirements: list[ComplianceRequirement]
     summary: str
-    timestamp: datetime = Field(default_factory=datetime.now)
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     metadata: dict = Field(default_factory=dict)
 
     model_config = ConfigDict(from_attributes=True)
