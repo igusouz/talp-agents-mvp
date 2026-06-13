@@ -30,6 +30,36 @@ flowchart LR
 3. Launch the full stack from the repository root with `docker compose up --build`, or run the services independently in development mode.
 4. Open the frontend, submit a user story, review the analyses, approve the edited story, and inspect the final BDD output.
 
+## LLM Providers Setup
+
+This platform uses Google Gemini and OpenRouter for AI-powered analysis.
+
+### Google Gemini API Key
+
+1. Access Google AI Studio: https://aistudio.google.com
+2. Sign in with your Google account.
+3. Navigate to **Get API Key**.
+4. Create a new API key.
+5. Add the key to the corresponding agent environment variables:
+
+```env
+GOOGLE_API_KEY=...
+GEMINI_API_KEY=...
+```
+
+### OpenRouter API Key
+
+1. Create an account at https://openrouter.ai
+2. Navigate to **Keys** in your account settings.
+3. Generate a new API key.
+4. Configure the agents that use OpenRouter:
+
+```env
+OPENROUTER_API_KEY=...
+OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
+OPENROUTER_MODEL=...
+```
+
 ## Documentation Index
 
 - [Architecture](docs/architecture.md)
