@@ -8,6 +8,8 @@ services:
     environment:
       VITE_APP_NAME: TALP Workflow Frontend
       VITE_APP_VERSION: 0.1.0
+      VITE_ORCHESTRATOR_BASE_URL: http://localhost:8000/api/v1
+      # Legacy key kept during migration for compatibility with older code paths.
       VITE_ORCHESTRATOR_API_BASE_URL: http://localhost:8000/api/v1
       VITE_REQUEST_TIMEOUT_MS: "30000"
       VITE_ENABLE_MOCKS: "false"
