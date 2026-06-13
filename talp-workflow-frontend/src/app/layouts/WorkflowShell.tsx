@@ -34,35 +34,3 @@ export function WorkflowShell() {
     </section>
   );
 }
-import { NavLink, Outlet, useParams } from 'react-router-dom'
-
-const stepLinkClassName = ({ isActive }: { isActive: boolean }) =>
-  isActive ? 'step-link step-link--active' : 'step-link'
-
-export function WorkflowShell() {
-  const { workflowId } = useParams()
-
-  return (
-    <section className="workflow-shell">
-      <header className="workflow-shell__header">
-        <div>
-          <p className="workflow-shell__eyebrow">Workflow</p>
-          <h2 className="workflow-shell__title">{workflowId ?? 'Untitled workflow'}</h2>
-        </div>
-
-        <nav className="workflow-shell__steps" aria-label="Workflow steps">
-          <NavLink className={stepLinkClassName} to="review">
-            Review
-          </NavLink>
-          <NavLink className={stepLinkClassName} to="final">
-            Final Result
-          </NavLink>
-        </nav>
-      </header>
-
-      <div className="workflow-shell__content">
-        <Outlet />
-      </div>
-    </section>
-  )
-}

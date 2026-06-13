@@ -9,19 +9,3 @@ export function NotFoundPage() {
     </div>
   );
 }
-import { Link } from 'react-router-dom'
-
-import { Page } from '@/shared/ui/Page'
-
-export function NotFoundPage() {
-  return (
-    <Page title="Page not found" subtitle="The requested route does not exist.">
-      <section className="state-panel">
-        <p className="state-panel__description">Return to the workflow console to continue.</p>
-        <Link className="button button--primary" to="/workflows">
-          Go to workflows
-        </Link>
-      </section>
-    </Page>
-  )
-}

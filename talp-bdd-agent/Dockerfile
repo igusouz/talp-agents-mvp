@@ -13,7 +13,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy project metadata first to leverage Docker layer caching
-COPY pyproject.toml pytest.ini README.md .env.example ./
+COPY pyproject.toml pytest.ini README.md ./
 
 # Copy application code
 COPY app/ ./app/
