@@ -60,7 +60,7 @@ class DependencyAnalyzer:
                 for dep_rule_id in depends_on:
                     if dep_rule_id not in detected_rule_ids:
                         # Encontrar o nome da regra de dependência
-                        dep_rule_name = dep_info["description"].split(" depende de ")[1].split("(")[0].strip()
+                        #dep_rule_name = dep_info["description"].split(" depende de ")[1].split("(")[0].strip()
 
                         gap = ComplianceGap(
                             rule_id=rule_id,
