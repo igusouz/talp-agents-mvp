@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError
 
-from app.schemas.qa import QARequest, BDDScenario, QAAnalysisResponse
+from app.schemas.qa import QARequest, BDDScenario, QAAnalysisResponse, QualityChecks, TraceableItem
 
 
 class TestQARequest:
@@ -34,15 +34,20 @@ class TestBDDScenario:
     def test_valid_scenario(self) -> None:
         """A complete scenario with title and structured steps is valid."""
         scenario = BDDScenario(
+            id="SC1",
             title="User logs in successfully",
             scenario_type="positive",
+            ac_ids=["AC1"],
             given=["the user is on the login page"],
             when=["the user submits valid credentials"],
             then=["the dashboard is displayed"],
+            evidence_us="As a user, I want to login",
+            origin="explicit_in_story",
         )
         assert scenario.title == "User logs in successfully"
         assert scenario.scenario_type == "positive"
         assert scenario.notes == []
+        assert scenario.id == "SC1"
         assert "Given the user is on the login page" in scenario.gherkin
 
     def test_scenario_with_notes(self) -> None:
@@ -83,13 +88,18 @@ class TestQAAnalysisResponse:
         """Full response with all fields populated."""
         response = QAAnalysisResponse(
             summary="Full analysis",
+            ac_map=["AC1: User can login"],
             bdd_scenarios=[
                 BDDScenario(
+                    id="SC1",
                     title="Test",
                     scenario_type="positive",
+                    ac_ids=["AC1"],
                     given=["a precondition"],
                     when=["an action occurs"],
                     then=["an outcome happens"],
+                    evidence_us="As a user, I want to login",
+                    origin="direct_inference",
                 )
             ],
             negative_cases=["Invalid input"],
@@ -98,10 +108,29 @@ class TestQAAnalysisResponse:
             risks=["Security risk"],
             automation_suggestions=["Automate login"],
             questions_for_refinement=["Who are the users?"],
+            negative_cases_trace=[
+                TraceableItem(
+                    text="Invalid input",
+                    evidence_us="login",
+                    origin="direct_inference",
+                    ac_ids=["AC1"],
+                    scenario_id="SC1",
+                )
+            ],
+            quality_checks=QualityChecks(
+                traceability_ratio=1.0,
+                unsupported_rate=0.0,
+                ac_coverage=1.0,
+                refinement_alignment=1.0,
+                automation_trace=1.0,
+                observations=[],
+            ),
         )
         assert len(response.bdd_scenarios) == 1
         assert len(response.negative_cases) == 1
         assert len(response.ambiguities) == 1
+        assert response.quality_checks is not None
+        assert response.quality_checks.traceability_ratio == 1.0
 
     def test_summary_is_required(self) -> None:
         """Summary field is mandatory in response."""
@@ -114,3 +143,4 @@ class TestQAAnalysisResponse:
         assert isinstance(response.bdd_scenarios, list)
         assert isinstance(response.negative_cases, list)
         assert isinstance(response.risks, list)
+        assert isinstance(response.negative_cases_trace, list)

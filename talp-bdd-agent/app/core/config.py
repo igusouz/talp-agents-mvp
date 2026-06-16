@@ -22,16 +22,23 @@ class Settings(BaseSettings):
     app_version: str = Field(default="0.1.0", validation_alias="QA_APP_VERSION")
     api_prefix: str = Field(default="/api/v1", validation_alias="QA_API_PREFIX")
     log_level: str = Field(default="INFO", validation_alias="QA_LOG_LEVEL")
-    llm_model: str = Field(default="gpt-4o-mini", validation_alias="QA_LLM_MODEL")
-    llm_base_url: str | None = Field(default=None, validation_alias="QA_LLM_BASE_URL")
+    llm_model: str = Field(default="gemini-2.5-flash", validation_alias="QA_LLM_MODEL")
+    llm_base_url: str | None = Field(
+        default="https://generativelanguage.googleapis.com/v1beta/openai",
+        validation_alias="QA_LLM_BASE_URL",
+    )
     llm_api_key: str | None = Field(default=None, validation_alias="QA_LLM_API_KEY")
+    google_api_key: str | None = Field(default=None, validation_alias="GOOGLE_API_KEY")
     llm_temperature: float = Field(default=0.0, validation_alias="QA_LLM_TEMPERATURE")
     llm_timeout_seconds: int = Field(default=60, validation_alias="QA_LLM_TIMEOUT_SECONDS")
 
     @model_validator(mode="after")
     def validate_llm_credentials(self) -> "Settings":
+        if not self.llm_api_key and self.google_api_key:
+            self.llm_api_key = self.google_api_key
+
         if not self.llm_api_key:
-            raise ValueError("QA_LLM_API_KEY must be set")
+            raise ValueError("QA_LLM_API_KEY or GOOGLE_API_KEY must be set")
         return self
 
 

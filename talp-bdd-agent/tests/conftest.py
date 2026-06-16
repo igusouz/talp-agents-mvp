@@ -24,30 +24,47 @@ def mock_qa_response() -> QAAnalysisResponse:
     return QAAnalysisResponse(
         summary="The password reset story defines email delivery and link expiration. "
         "Gaps exist around account lookup, token invalidation, and error messaging.",
+        ac_map=[
+            "AC1: The user must receive a reset email",
+            "AC2: The reset link expires in 30 minutes",
+            "AC3: The new password must contain at least one number",
+        ],
         bdd_scenarios=[
             BDDScenario(
+                id="SC1",
                 title="User receives reset email for valid account",
                 scenario_type="positive",
+                ac_ids=["AC1"],
                 given=["a registered user with email john@example.com"],
                 when=["the user requests a password reset"],
                 then=["a reset email is sent to john@example.com"],
                 notes=["Email should arrive within 5 minutes."],
+                evidence_us="The user must receive a reset email",
+                origin="explicit_in_story",
             ),
             BDDScenario(
+                id="SC2",
                 title="Reset link expires after 30 minutes",
                 scenario_type="edge",
+                ac_ids=["AC2"],
                 given=["a valid reset link created 31 minutes ago"],
                 when=["the user clicks the reset link"],
                 then=["the system rejects the request with 'Link expired'"],
                 notes=["Verify expiration timestamp in token."],
+                evidence_us="The reset link expires in 30 minutes",
+                origin="explicit_in_story",
             ),
             BDDScenario(
+                id="SC3",
                 title="Unregistered email is submitted",
                 scenario_type="negative",
+                ac_ids=["AC1"],
                 given=["an email not registered in the system"],
                 when=["the user requests a password reset"],
                 then=["the system responds without revealing account status"],
                 notes=["Prevent user enumeration."],
+                evidence_us="The user must receive a reset email",
+                origin="direct_inference",
             ),
         ],
         negative_cases=[
@@ -78,6 +95,58 @@ def mock_qa_response() -> QAAnalysisResponse:
             "Should users receive a confirmation email after password change?",
             "Can a user reset a password for another account?",
         ],
+        negative_cases_trace=[
+            {
+                "text": "Use an expired reset link.",
+                "evidence_us": "The reset link expires in 30 minutes",
+                "origin": "explicit_in_story",
+                "ac_ids": ["AC2"],
+                "scenario_id": "SC2",
+            }
+        ],
+        edge_cases_trace=[
+            {
+                "text": "Request reset immediately after account creation.",
+                "evidence_us": "As a user, I want to reset my password",
+                "origin": "direct_inference",
+                "ac_ids": ["AC1"],
+                "scenario_id": "SC1",
+            }
+        ],
+        ambiguities_trace=[
+            {
+                "text": "Should the system accept passwords that match the current password?",
+                "evidence_us": "The new password must contain at least one number",
+                "origin": "direct_inference",
+                "ambiguity_id": "AMB1",
+            }
+        ],
+        risks_trace=[
+            {
+                "text": "Token reuse could allow unauthorized password changes.",
+                "evidence_us": "reset my password",
+                "origin": "direct_inference",
+                "ac_ids": ["AC1", "AC2"],
+            }
+        ],
+        automation_suggestions_trace=[
+            {
+                "text": "API test: verify reset link expires after 30 minutes.",
+                "evidence_us": "The reset link expires in 30 minutes",
+                "origin": "explicit_in_story",
+                "ac_ids": ["AC2"],
+                "scenario_id": "SC2",
+            }
+        ],
+        questions_for_refinement_trace=[
+            {
+                "text": "Should users receive a confirmation email after password change?",
+                "evidence_us": "As a user, I want to reset my password",
+                "origin": "direct_inference",
+                "ambiguity_id": "AMB1",
+            }
+        ],
+        blocked_hypotheses=[],
     )
 
 

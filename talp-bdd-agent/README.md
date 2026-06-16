@@ -210,6 +210,8 @@ docker compose up --build
 ```
 
 Notes:
-- Provide a valid `QA_LLM_API_KEY` (via `.env` or environment) before calling endpoints that use the LLM.
+- Provide a valid `GOOGLE_API_KEY` (via `.env` or environment) before calling endpoints that use the LLM.
+- `QA_LLM_API_KEY` is still supported as an optional per-agent override.
+- Default model/base URL are configured for Gemini using Google's OpenAI-compatible endpoint.
 - For production images prefer a multi-stage build that installs only runtime dependencies (remove `.[dev]`).
 - Consider using a secret manager for API keys instead of embedding in `.env` for CI/CD.

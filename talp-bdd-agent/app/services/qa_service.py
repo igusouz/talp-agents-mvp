@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 
 from app.chains.qa_chain import QAAnalysisChain, get_qa_chain
+from app.core.evaluation import build_quality_checks
 from app.schemas.qa import QAAnalysisResponse, QARequest
 
 logger = logging.getLogger(__name__)
@@ -27,7 +28,9 @@ class QAService:
         if self._chain is None:
             self._chain = get_qa_chain()
 
-        return self._chain.invoke(request)
+        response = self._chain.invoke(request)
+        response.quality_checks = build_quality_checks(response, request.story)
+        return response
 
 
 def get_qa_service() -> QAService:

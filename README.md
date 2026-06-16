@@ -47,19 +47,6 @@ GOOGLE_API_KEY=...
 GEMINI_API_KEY=...
 ```
 
-### OpenRouter API Key
-
-1. Create an account at https://openrouter.ai
-2. Navigate to **Keys** in your account settings.
-3. Generate a new API key.
-4. Configure the agents that use OpenRouter:
-
-```env
-OPENROUTER_API_KEY=...
-OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
-OPENROUTER_MODEL=...
-```
-
 ## Documentation Index
 
 - [Architecture](docs/architecture.md)
