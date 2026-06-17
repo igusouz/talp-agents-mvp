@@ -51,7 +51,7 @@ class WorkflowService:
         invest_request = InvestAgentRequest(user_story_text=story_text)
         invest_response = await self._registry.invest.send(invest_request, context=context)
 
-        compliance_request = self._build_compliance_request(invest_response)
+        compliance_request = self._build_compliance_request(invest_response, story_text)
         compliance_response = await self._registry.compliance.send(compliance_request, context=context)
 
         record = WorkflowRecord(
@@ -168,7 +168,10 @@ class WorkflowService:
         return "\n".join(lines).strip()
 
     @staticmethod
-    def _build_compliance_request(invest_response: InvestAgentResponse) -> ComplianceAnalysisRequest:
+    def _build_compliance_request(
+        invest_response: InvestAgentResponse,
+        story_text: str,
+    ) -> ComplianceAnalysisRequest:
         analysis = invest_response.result.step_1_invest_analysis
 
         criteria_results = [
@@ -176,7 +179,7 @@ class WorkflowService:
                 criterion_id=name,
                 criterion_name=name,
                 result=criterion.status == "pass",
-                evidence=(criterion.evidence[0] if criterion.evidence else None),
+                    evidence=(" | ".join(criterion.evidence) if criterion.evidence else None),
             )
             for name, criterion in analysis.as_criteria_dict().items()
         ]
@@ -190,10 +193,12 @@ class WorkflowService:
                 investment_id=invest_response.execution_id,
                 status=status,
                 criteria_results=criteria_results,
-                summary=f"INVEST classification: {classification}",
+                summary=story_text,
                 metadata={
                     "schema_version": invest_response.schema_version,
                     "rule_applied": invest_response.result.step_2_classification.rule_applied,
+                    "user_story_text": story_text,
+                    "invest_classification": classification,
                 },
             ),
         )

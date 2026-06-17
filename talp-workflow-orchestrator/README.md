@@ -11,6 +11,7 @@ This repository now contains a FastAPI runtime plus the transport and contract l
 - A generic `AgentClient` abstraction with timeout and retry handling.
 - A client registry and factory functions so new agents can be added without changing orchestration logic.
 - Structured logging configuration for request tracing.
+- Compliance request enrichment that forwards the original rendered user story text to preserve full keyword context for downstream rule matching.
 
 ## Runtime
 

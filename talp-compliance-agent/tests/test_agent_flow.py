@@ -213,6 +213,39 @@ class TestComplianceAnalysisFlow:
         assert response.summary is not None
         assert "can_continue_to_bdd" in response.metadata
 
+    def test_original_story_text_in_metadata_is_used_for_rule_matching(self, invest_result_base):
+        """Deve usar o texto original da US quando disponível em metadata."""
+        # Arrange
+        invest_result_base.summary = "INVEST classification: boa"
+        invest_result_base.metadata = {
+            "user_story_text": (
+                "Title: Fluxo clinico completo\n\n"
+                "Como medico, quero registrar triagem com sinais vitais, parametros clinicos, comorbidades, "
+                "classificacao de risco Manchester, HDA, diagnostico CID, conduta, plano terapeutico, "
+                "prescricao de medicamento antibiotico com validacao CCIH, para manter seguranca assistencial.\n\n"
+                "Acceptance criteria:\n"
+                "- status do atendimento atualizado"
+            )
+        }
+        request = ComplianceAnalysisRequest(
+            investment_id="INV-2026-STORY-TEXT",
+            invest_result=invest_result_base,
+        )
+
+        # Act
+        response = run_compliance_graph(request)
+
+        # Assert
+        rule_ids = {r.rule_id for r in response.detected_rules}
+        assert "RULE_001" in rule_ids
+        assert "RULE_002" in rule_ids
+        assert "RULE_003" in rule_ids
+        assert "RULE_004" in rule_ids
+        assert "RULE_005" in rule_ids
+        assert "RULE_006" in rule_ids
+        assert "RULE_007" in rule_ids
+        assert "RULE_008" in rule_ids
+
     def test_invalid_request_raises_error(self):
         """Teste: Requisição inválida levanta erro."""
         # Arrange

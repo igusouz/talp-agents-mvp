@@ -85,6 +85,22 @@ Responsibilities:
 - `ComplianceAnalysisRequest` / `ComplianceAnalysisResponse`
 - `QARequest` / `QAAnalysisResponse`
 
+## Compliance Request Enrichment
+
+The orchestrator enriches the compliance request with the original rendered user story text.
+
+Current behavior:
+
+- `invest_result.summary` carries the rendered story text produced from `title`, `description`, `acceptance_criteria`, and optional `additional_context`.
+- `invest_result.metadata.user_story_text` also carries that rendered story text as the preferred source for Compliance Agent keyword matching.
+- `criteria_results[*].evidence` is forwarded with all available evidence joined into a single string, instead of only the first evidence item.
+
+Why this exists:
+
+- The Compliance Agent performs heuristic keyword matching against business and clinical terms.
+- Matching only against a reduced INVEST classification summary can hide required keywords and produce false compliance gaps.
+- Forwarding the original rendered story keeps the communication contract typed while preserving the source text needed for reliable matching.
+
 ## Class Responsibilities
 
 - `core.config.Settings`: loads and validates environment configuration.

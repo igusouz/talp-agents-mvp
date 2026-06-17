@@ -250,6 +250,12 @@ Typical output is a JSON serialized `FinalOutput` object that includes:
 
 `http://localhost:8000/api/v1`
 
+### Matching Notes
+
+- The Compliance Agent performs keyword matching against the original rendered user story text when it is available in `invest_result.metadata.user_story_text`.
+- The Workflow Orchestrator now forwards that original rendered story to the Compliance Agent to avoid false negatives caused by matching only against a reduced INVEST summary.
+- When `invest_result.metadata.user_story_text` is absent, the Compliance Agent falls back to `invest_result.summary` and then enriches the text with `criteria_results` evidence.
+
 ### Health
 
 `GET /health`

@@ -134,13 +134,15 @@ def run_compliance_graph(request: ComplianceAnalysisRequest) -> ComplianceAnalys
     catalog_rules = catalog_repo.load_rules()
 
     # 4. Rodar rule_matcher
-    # Para isso, precisamos do texto/descrição do investimento
-    # Vamos usar invest_result.summary como base
-    investment_text = request.invest_result.summary or ""
-    for criterion in request.invest_result.criteria_results:
-        investment_text += f" {criterion.criterion_name}"
-        if criterion.evidence:
-            investment_text += f": {criterion.evidence}"
+    # Preferir o texto original da US quando disponível; usar a reconstrução
+    # a partir do resultado do INVEST apenas como fallback.
+    investment_text = request.invest_result.metadata.get("user_story_text", "")
+    if not investment_text.strip():
+        investment_text = request.invest_result.summary or ""
+        for criterion in request.invest_result.criteria_results:
+            investment_text += f" {criterion.criterion_name}"
+            if criterion.evidence:
+                investment_text += f": {criterion.evidence}"
 
     rule_matcher = RuleMatcher()
     matched_rules_objects = rule_matcher.match_rules(investment_text)

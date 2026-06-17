@@ -59,10 +59,17 @@ stateDiagram-v2
 - The orchestrator forwards a normalized story to the Invest Agent.
 - The Invest Agent returns an `InvestResult`-style final output.
 - The orchestrator transforms the INVEST result into the Compliance Agent request format.
+- During that transformation, the orchestrator forwards the original rendered story text in `invest_result.metadata.user_story_text` and also keeps the rendered story in `invest_result.summary`.
 - The Compliance Agent returns a structured compliance analysis.
 - The frontend lets the reviewer refine the story using the original story and the analyses.
 - After approval, the orchestrator sends the final story to the BDD QA Agent.
 - The BDD QA Agent returns a BDD summary, scenarios, risks, and refinement questions.
+
+## Compliance Matching Behavior
+
+- Compliance rule detection should use the original rendered story text as the primary source for keyword matching.
+- This behavior is required because matching only against a reduced INVEST summary can drop domain keywords such as `triagem`, `sinais vitais`, `CID`, `conduta`, or `Manchester`, producing false `non_compliant` results.
+- If the original rendered story text is not available, the Compliance Agent falls back to the INVEST summary plus criteria evidence.
 
 ## Mermaid Sequence Diagrams
 

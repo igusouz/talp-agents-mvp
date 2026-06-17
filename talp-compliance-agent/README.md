@@ -440,12 +440,21 @@ curl -X POST http://localhost:8000/api/v1/compliance/analyze \
         }
       ],
       "summary": "Como médico, quero prescrever antibiótico para paciente internado, para iniciar o tratamento adequado.",
-      "metadata": {}
+      "metadata": {
+        "user_story_text": "Title: Prescricao de antibiotico\n\nComo medico, quero prescrever antibiotico para paciente internado, para iniciar o tratamento adequado.\n\nAcceptance criteria:\n- A prescricao deve ser validada pela CCIH antes da liberacao final"
+      }
     }
   }'
 ```
 
 Resultado esperado: a resposta deve conter regras como `RULE_007` e `RULE_008`, caso a lógica de matching encontre evidências relacionadas a prescrição e antibiótico.
+
+Observações importantes:
+
+- O matching de regras usa preferencialmente `invest_result.metadata.user_story_text` quando esse campo estiver presente.
+- Esse campo deve conter a user story renderizada completa, preservando `Title`, `Description`, `Acceptance criteria` e `Additional context` quando existir.
+- Na ausência desse campo, o agente usa `invest_result.summary` e complementa a análise com evidências de `criteria_results`.
+- Esse comportamento reduz falsos negativos em regras mandatórias quando o resumo do INVEST é curto ou perde keywords relevantes do domínio.
 
 ---
 
