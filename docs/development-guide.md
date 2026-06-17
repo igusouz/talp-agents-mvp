@@ -120,6 +120,22 @@ A pragmatic target is high coverage for pure logic and meaningful contract cover
 4. Keep agent contracts explicit and typed.
 5. Preserve human-review semantics in the workflow.
 
+## Repository Hygiene
+
+The repository root contains a shared `.gitignore` for generated files across all services.
+
+Do not commit:
+
+- Python bytecode and caches such as `__pycache__/`, `*.pyc`, `.pytest_cache/`, `.mypy_cache/`, and `.ruff_cache/`.
+- Local virtual environments such as `.venv/`, `venv/`, and `env/`.
+- Frontend dependency and build output such as `node_modules/`, `build/`, and `dist/`.
+- Local runtime files such as `.env`, logs, JSONL audit logs, SQLite databases, and generated storage contents.
+
+Keep versioned:
+
+- `.env.example` files that document required configuration.
+- `.gitkeep` placeholders used to preserve required empty runtime directories.
+
 ## Practical Notes
 
 - The Invest Agent now supports both CLI and HTTP execution, so contract changes should be documented and tested carefully in both entrypoints.

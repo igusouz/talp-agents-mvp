@@ -16,10 +16,15 @@ The repository uses environment variables per service. The examples below match 
 The Invest Agent exposes a FastAPI API and also supports CLI execution. It reads the following environment variables:
 
 ```env
+GOOGLE_API_KEY=your-gemini-api-key
+# Optional legacy alias accepted by the Invest Agent:
+# GEMINI_API_KEY=your-gemini-api-key
 TALP_AUDIT_LOG_DIR=logs/audit
 TALP_LLM_MODEL=gemini-2.5-flash
 TALP_BACKEND=llm
 ```
+
+`GOOGLE_API_KEY` is required when `TALP_BACKEND=llm`. `GEMINI_API_KEY` remains supported as a legacy alias for the Invest Agent.
 
 ### Compliance Agent
 
@@ -38,11 +43,18 @@ QA_APP_NAME=BDD QA Agent
 QA_APP_VERSION=0.1.0
 QA_API_PREFIX=/api/v1
 QA_LOG_LEVEL=INFO
-QA_LLM_MODEL=gpt-4o-mini
-QA_LLM_API_KEY=replace-me
+QA_LLM_MODEL=gemini-2.5-flash
+QA_LLM_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai
+GOOGLE_API_KEY=your-gemini-api-key
+# Optional BDD-specific override:
+# QA_LLM_API_KEY=your-gemini-api-key
+# Optional legacy Gemini alias:
+# GEMINI_API_KEY=your-gemini-api-key
 QA_LLM_TEMPERATURE=0.0
 QA_LLM_TIMEOUT_SECONDS=60
 ```
+
+Credential resolution order for the BDD QA Agent is `QA_LLM_API_KEY`, then `GOOGLE_API_KEY`, then `GEMINI_API_KEY`. Use `GOOGLE_API_KEY` as the central credential for the full stack unless a BDD-specific override is needed.
 
 ### Workflow Orchestrator
 
@@ -82,7 +94,15 @@ VITE_ENABLE_MOCKS=false
 
 ## .env Examples
 
-Suggested local file layout:
+For Docker Compose, create a root `.env` file so the shared Gemini credential is available to both the Invest and BDD agents:
+
+```env
+GOOGLE_API_KEY=your-gemini-api-key
+```
+
+The Compose configuration fails fast if `GOOGLE_API_KEY` is missing because both Gemini-backed agents require it in the default LLM mode.
+
+Suggested per-service local file layout when running services independently:
 
 - `talp-invest-agent/.env`
 - `talp-compliance-agent/.env`
@@ -130,6 +150,18 @@ uvicorn app.main:app --host 0.0.0.0 --port 8003 --reload
 cd talp-workflow-orchestrator
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
+
+### Using UV
+
+If you use UV as the Python environment and dependency manager, prefix the Python commands with `uv run` from each service directory:
+
+```bash
+uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+uv run python -m app.main "As a customer, I want to reset my password..."
+uv run --extra dev pytest
+```
+
+Use the service-specific app module shown above for each backend. For example, the Invest Agent API entrypoint is `app.api.main:app`, while the Compliance, BDD, and Orchestrator services use `app.main:app`.
 
 ### Frontend startup
 
@@ -247,5 +279,8 @@ Recommended hostnames within Docker Compose:
 ## Secrets and Credentials
 
 - Never commit real API keys, tokens, or provider credentials to `docker-compose.yml`.
+- Use `GOOGLE_API_KEY` as the shared Gemini credential for the default Invest and BDD agents.
+- Use `QA_LLM_API_KEY` only when the BDD Agent needs a provider key different from the shared Gemini credential.
+- `GEMINI_API_KEY` is supported as a legacy Gemini alias.
 - Prefer loading secrets from `.env` files that are gitignored, CI/CD secret stores, or runtime secret managers.
 - Rotate any credential immediately if it was exposed in source control history.

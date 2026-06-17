@@ -41,8 +41,9 @@ This document collects the most common problems and the fastest ways to diagnose
 
 ### Checks
 
-- Verify `QA_LLM_API_KEY` is set.
-- Confirm the configured model is available in the provider.
+- Verify `GOOGLE_API_KEY` is set for the default Gemini configuration.
+- If using a BDD-specific credential, verify `QA_LLM_API_KEY` is set.
+- Confirm the configured Gemini model is available for the key and project.
 - Check `QA_LLM_TIMEOUT_SECONDS` and `QA_LLM_TEMPERATURE`.
 - Retry after a short delay if the provider is throttling.
 
@@ -73,6 +74,8 @@ This document collects the most common problems and the fastest ways to diagnose
 
 - Ensure the required ports are not already in use.
 - Confirm the service names in Docker Compose match the orchestrator base URLs.
+- If Compose reports `GOOGLE_API_KEY is required for Gemini agents`, create or update the root `.env` file with a valid `GOOGLE_API_KEY`.
+- Replace placeholder credentials such as `replace-me` or `your-google-api-key-here`; the agents reject those values before provider calls.
 - Rebuild after config changes.
 - Inspect logs with `docker compose logs -f`.
 

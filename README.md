@@ -19,7 +19,7 @@ flowchart LR
   ORCH --> COMP[Compliance Agent]
   ORCH --> BDD[BDD QA Agent]
   COMP --> DB[(SQLite / Storage)]
-  BDD --> LLM[(OpenRouter / LLM Provider)]
+  BDD --> LLM[(Google Gemini / LLM Provider)]
   INVEST --> LLM
 ```
 
@@ -32,7 +32,7 @@ flowchart LR
 
 ## LLM Providers Setup
 
-This platform uses Google Gemini and OpenRouter for AI-powered analysis.
+This platform uses Google Gemini for AI-powered Invest and BDD analysis. The BDD agent is configured through Google's OpenAI-compatible endpoint, so other compatible providers can be introduced through configuration if needed.
 
 ### Google Gemini API Key
 
@@ -40,11 +40,12 @@ This platform uses Google Gemini and OpenRouter for AI-powered analysis.
 2. Sign in with your Google account.
 3. Navigate to **Get API Key**.
 4. Create a new API key.
-5. Add the key to the corresponding agent environment variables:
+5. Add the key as the shared Gemini credential:
 
 ```env
 GOOGLE_API_KEY=...
-GEMINI_API_KEY=...
+# Optional legacy alias:
+# GEMINI_API_KEY=...
 ```
 
 ## Documentation Index

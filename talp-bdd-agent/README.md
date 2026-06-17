@@ -129,7 +129,7 @@ The evals intentionally remain small and JSON-backed so they are easy to extend 
 
 ## Testing
 
-This project includes comprehensive unit and integration tests that mock external dependencies, allowing you to validate the application without requiring OpenAI API credentials.
+This project includes comprehensive unit and integration tests that mock external dependencies, allowing you to validate the application without requiring live Gemini API calls.
 
 ### Test Structure
 
@@ -168,7 +168,7 @@ pytest --cov=app tests/
 
 ### Test Mocking Strategy
 
-Tests use `unittest.mock.patch` to replace the real `ChatOpenAI` client with a mock that returns structured JSON responses without calling OpenAI's API. This keeps tests fast and dependency-free.
+Tests use `unittest.mock.patch` to replace the real `ChatOpenAI` client with a mock that returns structured JSON responses without calling the configured LLM provider. The test configuration provides a dummy `GOOGLE_API_KEY` so application settings can be imported without using a real secret.
 
 The `conftest.py` provides reusable fixtures:
 
@@ -211,7 +211,9 @@ docker compose up --build
 
 Notes:
 - Provide a valid `GOOGLE_API_KEY` (via `.env` or environment) before calling endpoints that use the LLM.
-- `QA_LLM_API_KEY` is still supported as an optional per-agent override.
+- Credential precedence is `QA_LLM_API_KEY`, then `GOOGLE_API_KEY`, then `GEMINI_API_KEY`.
+- `QA_LLM_API_KEY` is supported as an optional BDD-specific override.
+- `GEMINI_API_KEY` is supported as a legacy Gemini alias.
 - Default model/base URL are configured for Gemini using Google's OpenAI-compatible endpoint.
 - For production images prefer a multi-stage build that installs only runtime dependencies (remove `.[dev]`).
 - Consider using a secret manager for API keys instead of embedding in `.env` for CI/CD.

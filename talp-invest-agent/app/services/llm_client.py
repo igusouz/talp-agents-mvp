@@ -7,6 +7,13 @@ from typing import Protocol
 from app.schemas.models import BadStoryReport, InvestAnalysis
 from app.services.prompt_registry import PromptTemplate
 
+PLACEHOLDER_API_KEYS = frozenset(
+    {
+        "replace-me",
+        "your-google-api-key-here",
+    }
+)
+
 
 class InvestAnalyzer(Protocol):
     model_name: str
@@ -33,6 +40,10 @@ def _gemini_api_key() -> str:
         raise ValueError(
             "GOOGLE_API_KEY or GEMINI_API_KEY must be set when TALP_BACKEND=llm"
         )
+
+    if api_key.strip().lower() in PLACEHOLDER_API_KEYS:
+        raise ValueError("Gemini API key is still set to a placeholder value")
+
     return api_key
 
 

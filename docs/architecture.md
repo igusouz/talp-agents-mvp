@@ -88,7 +88,7 @@ Responsibilities:
 - Generate negative cases, edge cases, risks, and automation suggestions.
 - Return a strongly typed response for frontend rendering.
 
-The service is configured through an API-key and model settings pattern that can point to a provider-compatible endpoint.
+The service uses Gemini by default through Google's OpenAI-compatible endpoint. It keeps an API-key and model settings pattern so provider-compatible endpoints can still be introduced by configuration when needed.
 
 ## Component Interactions
 
@@ -127,7 +127,7 @@ flowchart LR
   ORCH --> BDD[BDD QA Agent]
   COMP --> CAT[(Compliance Catalog CSV)]
   COMP --> SQL[(SQLite)]
-  INVEST --> LLM[(OpenRouter / LLM Provider)]
+  INVEST --> LLM[(Google Gemini / LLM Provider)]
   BDD --> LLM
 ```
 
@@ -169,9 +169,9 @@ Pydantic provides strict data validation and serialization for the agent inputs 
 
 HTTPX is used by the orchestrator as the transport layer for calling downstream services with timeouts, retries, and response validation.
 
-### OpenRouter
+### Google Gemini
 
-OpenRouter is a good fit for the platform because it can act as a provider-agnostic gateway for compatible agents. The repository already separates model configuration from application code, so OpenRouter can be introduced without changing the workflow logic when an OpenAI-compatible gateway is needed.
+Google Gemini is the default LLM provider for the current platform. The Invest Agent uses the Google GenAI-backed LangChain integration, while the BDD QA Agent uses Google's OpenAI-compatible endpoint through the OpenAI-compatible LangChain client. `GOOGLE_API_KEY` is the shared credential for both agents, with agent-specific overrides and legacy aliases kept for compatibility.
 
 ## Future Improvements
 

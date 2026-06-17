@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import os
 from unittest.mock import MagicMock
 
 import pytest
 from fastapi.testclient import TestClient
 from langchain_core.messages import AIMessage
+
+os.environ.setdefault("GOOGLE_API_KEY", "test-google-key")
 
 from app.main import app
 from app.schemas.qa import QAAnalysisResponse, BDDScenario

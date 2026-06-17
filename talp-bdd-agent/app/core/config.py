@@ -7,6 +7,13 @@ from functools import lru_cache
 from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+PLACEHOLDER_API_KEYS = frozenset(
+    {
+        "replace-me",
+        "your-google-api-key-here",
+    }
+)
+
 
 class Settings(BaseSettings):
     """Typed settings for the FastAPI application and LLM client."""
@@ -29,16 +36,21 @@ class Settings(BaseSettings):
     )
     llm_api_key: str | None = Field(default=None, validation_alias="QA_LLM_API_KEY")
     google_api_key: str | None = Field(default=None, validation_alias="GOOGLE_API_KEY")
+    gemini_api_key: str | None = Field(default=None, validation_alias="GEMINI_API_KEY")
     llm_temperature: float = Field(default=0.0, validation_alias="QA_LLM_TEMPERATURE")
     llm_timeout_seconds: int = Field(default=60, validation_alias="QA_LLM_TIMEOUT_SECONDS")
 
     @model_validator(mode="after")
     def validate_llm_credentials(self) -> "Settings":
-        if not self.llm_api_key and self.google_api_key:
-            self.llm_api_key = self.google_api_key
+        if not self.llm_api_key:
+            self.llm_api_key = self.google_api_key or self.gemini_api_key
 
         if not self.llm_api_key:
-            raise ValueError("QA_LLM_API_KEY or GOOGLE_API_KEY must be set")
+            raise ValueError("QA_LLM_API_KEY, GOOGLE_API_KEY or GEMINI_API_KEY must be set")
+
+        if self.llm_api_key.strip().lower() in PLACEHOLDER_API_KEYS:
+            raise ValueError("Gemini API key is still set to a placeholder value")
+
         return self
 
 

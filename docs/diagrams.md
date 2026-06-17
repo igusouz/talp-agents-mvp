@@ -13,7 +13,7 @@ flowchart LR
   ORCH --> BDD[BDD QA Agent]
   COMP --> DB[(SQLite)]
   COMP --> CAT[(Compliance Catalog CSV)]
-  INV --> LLM[(OpenRouter / LLM Provider)]
+  INV --> LLM[(Google Gemini / LLM Provider)]
   BDD --> LLM
 ```
 
@@ -108,13 +108,16 @@ flowchart TB
   end
 
   subgraph Containers[Agent Containers]
+    INV[Invest Agent]
     COMP[Compliance Agent]
     BDD[BDD QA Agent]
   end
 
   FE --> ORCH
+  ORCH --> INV
   ORCH --> COMP
   ORCH --> BDD
   COMP --> DB[(SQLite)]
-  BDD --> LLM[(OpenRouter)]
+  INV --> LLM[(Google Gemini)]
+  BDD --> LLM
 ```

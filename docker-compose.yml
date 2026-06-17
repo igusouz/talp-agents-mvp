@@ -60,7 +60,7 @@ services:
       TALP_LLM_MODEL: gemini-2.5-flash
       TALP_AUDIT_LOG_DIR: /app/logs/audit
       # Required when TALP_BACKEND=llm. Set in your shell or a .env file at repo root.
-      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:?GOOGLE_API_KEY is required for Gemini agents}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
     volumes:
       - ./talp-invest-agent/logs:/app/logs
@@ -100,9 +100,10 @@ services:
       QA_LLM_TEMPERATURE: "0.0"
       QA_LLM_TIMEOUT_SECONDS: "120"
       # Centralized key shared across agents.
-      GOOGLE_API_KEY: your-google-api-key-here
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:?GOOGLE_API_KEY is required for Gemini agents}
       # Optional per-agent override (leave empty to use GOOGLE_API_KEY fallback).
       QA_LLM_API_KEY: ${QA_LLM_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       QA_LLM_BASE_URL: https://generativelanguage.googleapis.com/v1beta/openai
 
 networks:

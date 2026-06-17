@@ -107,5 +107,6 @@ TALP_LLM_MODEL=gemini-2.5-flash
 TALP_AUDIT_LOG_DIR=logs/audit
 ```
 
-`GOOGLE_API_KEY` e a variavel preferida pelo pacote LangChain Google GenAI.
-`GEMINI_API_KEY` tambem e aceita pelo agente como alias.
+`GOOGLE_API_KEY` e a credencial central recomendada para execucao da stack multiagente com Gemini.
+`GEMINI_API_KEY` tambem e aceita pelo agente como alias legado.
+Valores placeholder como `replace-me` ou `your-google-api-key-here` sao rejeitados antes da chamada ao provedor.
