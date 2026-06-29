@@ -10,7 +10,7 @@ from typing import Any
 from app.config.settings import load_settings
 from app.graph import InvestAgent, build_agent
 from app.services.heuristic_backend import HeuristicInvestAnalyzer, HeuristicReportGenerator
-from app.services.llm_client import GeminiInvestAnalyzer
+from app.services.llm_client import LLMInvestAnalyzer
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -28,14 +28,7 @@ def build_evaluation_agent(backend: str) -> Any:
         settings = load_settings(ROOT)
         return InvestAgent(
             settings=settings,
-            analyzer=GeminiInvestAnalyzer(
-                settings.llm_model,
-                temperature=0.0,
-                max_tokens=settings.llm_max_tokens,
-                request_timeout=settings.llm_timeout_seconds,
-                retries=settings.llm_retries,
-                thinking_budget=settings.llm_thinking_budget,
-            ),
+            analyzer=LLMInvestAnalyzer(settings, temperature=settings.llm_temperature),
             report_generator=HeuristicReportGenerator(),
         )
     if backend == "heuristic-analysis":

@@ -96,12 +96,20 @@ class QAAnalysisChain:
                 ),
             ]
         )
+        default_headers = {}
+        if self.settings.llm_provider == "openrouter":
+            if self.settings.openrouter_http_referer:
+                default_headers["HTTP-Referer"] = self.settings.openrouter_http_referer
+            if self.settings.openrouter_title:
+                default_headers["X-OpenRouter-Title"] = self.settings.openrouter_title
+
         self._llm = ChatOpenAI(
             model=self.settings.llm_model,
             base_url=self.settings.llm_base_url,
             api_key=self.settings.llm_api_key,
             temperature=self.settings.llm_temperature,
             timeout=self.settings.llm_timeout_seconds,
+            default_headers=default_headers or None,
         )
         self._chain = self._prompt | self._llm.with_structured_output(QAAnalysisResponse)
 

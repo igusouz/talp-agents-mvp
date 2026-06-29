@@ -210,10 +210,12 @@ docker compose up --build
 ```
 
 Notes:
-- Provide a valid `GOOGLE_API_KEY` (via `.env` or environment) before calling endpoints that use the LLM.
-- Credential precedence is `QA_LLM_API_KEY`, then `GOOGLE_API_KEY`, then `GEMINI_API_KEY`.
-- `QA_LLM_API_KEY` is supported as an optional BDD-specific override.
-- `GEMINI_API_KEY` is supported as a legacy Gemini alias.
-- Default model/base URL are configured for Gemini using Google's OpenAI-compatible endpoint.
+- Provide a valid provider credential before calling endpoints that use the LLM.
+- The shared stack provider is selected with `LLM_PROVIDER=gemini|openrouter`; the default is `gemini`.
+- With `gemini`, credential precedence is `QA_LLM_API_KEY`, `LLM_API_KEY`, `TALP_LLM_API_KEY`, then `GOOGLE_API_KEY`, then `GEMINI_API_KEY`.
+- With `openrouter`, credential precedence is `QA_LLM_API_KEY`, `LLM_API_KEY`, `TALP_LLM_API_KEY`, then `OPENROUTER_API_KEY`.
+- `QA_LLM_*` settings are supported as BDD-specific overrides.
+- `TALP_LLM_*` settings remain accepted as legacy aliases.
+- Default Gemini base URL uses Google's OpenAI-compatible endpoint; default OpenRouter base URL is `https://openrouter.ai/api/v1`.
 - For production images prefer a multi-stage build that installs only runtime dependencies (remove `.[dev]`).
 - Consider using a secret manager for API keys instead of embedding in `.env` for CI/CD.

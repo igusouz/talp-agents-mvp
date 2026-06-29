@@ -103,18 +103,29 @@ em `/app/logs` preserva os arquivos de auditoria gerados pelo container.
 ```text
 GOOGLE_API_KEY
 GEMINI_API_KEY
-TALP_LLM_MODEL=gemini-2.5-flash
-TALP_LLM_MAX_TOKENS=1024
-TALP_LLM_TIMEOUT_SECONDS=45
-TALP_LLM_RETRIES=1
-TALP_LLM_THINKING_BUDGET=0
+OPENROUTER_API_KEY
+LLM_PROVIDER=gemini
+LLM_MODEL=
+LLM_BASE_URL=
+LLM_API_KEY=
+LLM_TEMPERATURE=0.0
+LLM_MAX_TOKENS=1024
+LLM_TIMEOUT_SECONDS=45
+LLM_RETRIES=1
+LLM_THINKING_BUDGET=0
+OPENROUTER_HTTP_REFERER=
+OPENROUTER_TITLE=TALP Agents
 TALP_AUDIT_LOG_DIR=logs/audit
 ```
 
 `GOOGLE_API_KEY` e a credencial central recomendada para execucao da stack multiagente com Gemini.
 `GEMINI_API_KEY` tambem e aceita pelo agente como alias legado.
+`LLM_PROVIDER=openrouter` usa OpenRouter com `OPENROUTER_API_KEY` ou
+`LLM_API_KEY`. O default do agente continua sendo `gemini`.
 Valores placeholder como `replace-me` ou `your-google-api-key-here` sao rejeitados antes da chamada ao provedor.
-`TALP_LLM_MAX_TOKENS`, `TALP_LLM_TIMEOUT_SECONDS`, `TALP_LLM_RETRIES` e
-`TALP_LLM_THINKING_BUDGET` limitam saida, tempo de espera, retentativas e tokens
+`LLM_MAX_TOKENS`, `LLM_TIMEOUT_SECONDS`, `LLM_RETRIES` e
+`LLM_THINKING_BUDGET` limitam saida, tempo de espera, retentativas e tokens
 de raciocinio do Gemini para reduzir respostas longas, falhas de parsing e gasto
 de quota em execucoes de avaliacao.
+Variaveis `INVEST_LLM_*` podem sobrescrever apenas o INVEST Agent, enquanto
+`TALP_LLM_*` continua aceito como formato legado.

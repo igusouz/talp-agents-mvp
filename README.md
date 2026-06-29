@@ -32,9 +32,11 @@ flowchart LR
 
 ## LLM Providers Setup
 
-This platform uses Google Gemini for AI-powered Invest and BDD analysis. The BDD agent is configured through Google's OpenAI-compatible endpoint, so other compatible providers can be introduced through configuration if needed.
+This platform uses Google Gemini by default for AI-powered Invest and BDD analysis.
+Both agents can also be switched together to OpenRouter through shared
+`LLM_*` settings.
 
-### Google Gemini API Key
+### Google Gemini
 
 1. Access Google AI Studio: https://aistudio.google.com
 2. Sign in with your Google account.
@@ -47,6 +49,21 @@ GOOGLE_API_KEY=...
 # Optional legacy alias:
 # GEMINI_API_KEY=...
 ```
+
+### OpenRouter
+
+To use OpenRouter for both Invest and BDD:
+
+```env
+LLM_PROVIDER=openrouter
+OPENROUTER_API_KEY=...
+# Optional:
+# LLM_MODEL=google/gemini-2.5-flash
+```
+
+When `LLM_PROVIDER=gemini`, both LLM-backed agents use Gemini. When
+`LLM_PROVIDER=openrouter`, both use OpenRouter unless an agent-specific override
+is set. Legacy `TALP_LLM_*` variables are still accepted for compatibility.
 
 ## Documentation Index
 

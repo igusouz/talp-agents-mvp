@@ -11,6 +11,39 @@
 
 The repository uses environment variables per service. The examples below match the current codebase.
 
+### Shared LLM Provider Selection
+
+Invest and BDD can use the same provider selection through shared `LLM_*`
+variables. The default provider is Gemini.
+
+Gemini stack configuration:
+
+```env
+LLM_PROVIDER=gemini
+GOOGLE_API_KEY=your-gemini-api-key
+# Optional legacy Gemini alias:
+# GEMINI_API_KEY=your-gemini-api-key
+```
+
+OpenRouter stack configuration:
+
+```env
+LLM_PROVIDER=openrouter
+OPENROUTER_API_KEY=your-openrouter-api-key
+# Optional shared override:
+# LLM_API_KEY=your-openrouter-api-key
+# Optional model override. Default is google/gemini-2.5-flash.
+# LLM_MODEL=google/gemini-2.5-flash
+# Optional base URL override. Default is https://openrouter.ai/api/v1.
+# LLM_BASE_URL=https://openrouter.ai/api/v1
+```
+
+When `LLM_PROVIDER=gemini`, both Invest and BDD use Gemini by default. When
+`LLM_PROVIDER=openrouter`, both use OpenRouter by default. Agent-specific
+variables such as `INVEST_LLM_MODEL`, `QA_LLM_MODEL`, `INVEST_LLM_API_KEY`, or
+`QA_LLM_API_KEY` remain available only as explicit overrides. Legacy
+`TALP_LLM_*` variables are still accepted for compatibility.
+
 ### Invest Agent
 
 The Invest Agent exposes a FastAPI API and also supports CLI execution. It reads the following environment variables:
@@ -19,17 +52,24 @@ The Invest Agent exposes a FastAPI API and also supports CLI execution. It reads
 GOOGLE_API_KEY=your-gemini-api-key
 # Optional legacy alias accepted by the Invest Agent:
 # GEMINI_API_KEY=your-gemini-api-key
+LLM_PROVIDER=gemini
+LLM_API_KEY=
+OPENROUTER_API_KEY=
 TALP_AUDIT_LOG_DIR=logs/audit
-TALP_LLM_MODEL=gemini-2.5-flash
-TALP_LLM_MAX_TOKENS=1024
-TALP_LLM_TIMEOUT_SECONDS=45
-TALP_LLM_RETRIES=1
-TALP_LLM_THINKING_BUDGET=0
+LLM_MODEL=
+LLM_BASE_URL=
+LLM_TEMPERATURE=0.0
+LLM_MAX_TOKENS=1024
+LLM_TIMEOUT_SECONDS=45
+LLM_RETRIES=1
+LLM_THINKING_BUDGET=0
 TALP_BACKEND=llm
 ```
 
-`GOOGLE_API_KEY` is required when `TALP_BACKEND=llm`. `GEMINI_API_KEY` remains supported as a legacy alias for the Invest Agent.
-The `TALP_LLM_*` execution limits keep structured Gemini responses short and reduce automatic retry traffic when using free-tier quotas.
+With `LLM_PROVIDER=gemini`, `GOOGLE_API_KEY`, `GEMINI_API_KEY`, or `LLM_API_KEY`
+is required. With `LLM_PROVIDER=openrouter`, `OPENROUTER_API_KEY` or
+`LLM_API_KEY` is required. The `LLM_*` execution limits keep structured responses short
+and reduce automatic retry traffic when using free-tier quotas.
 
 ### Compliance Agent
 
@@ -48,18 +88,26 @@ QA_APP_NAME=BDD QA Agent
 QA_APP_VERSION=0.1.0
 QA_API_PREFIX=/api/v1
 QA_LOG_LEVEL=INFO
-QA_LLM_MODEL=gemini-2.5-flash
-QA_LLM_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai
+LLM_PROVIDER=gemini
+LLM_MODEL=
+LLM_BASE_URL=
+LLM_API_KEY=
 GOOGLE_API_KEY=your-gemini-api-key
+OPENROUTER_API_KEY=
 # Optional BDD-specific override:
-# QA_LLM_API_KEY=your-gemini-api-key
+# QA_LLM_API_KEY=provider-specific-key
+# QA_LLM_MODEL=gemini-2.5-flash
+# QA_LLM_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai
 # Optional legacy Gemini alias:
 # GEMINI_API_KEY=your-gemini-api-key
-QA_LLM_TEMPERATURE=0.0
-QA_LLM_TIMEOUT_SECONDS=60
+LLM_TEMPERATURE=0.0
+LLM_TIMEOUT_SECONDS=60
 ```
 
-Credential resolution order for the BDD QA Agent is `QA_LLM_API_KEY`, then `GOOGLE_API_KEY`, then `GEMINI_API_KEY`. Use `GOOGLE_API_KEY` as the central credential for the full stack unless a BDD-specific override is needed.
+Credential resolution order for the BDD QA Agent is `QA_LLM_API_KEY`, then
+`LLM_API_KEY`, then legacy `TALP_LLM_API_KEY`, then the selected provider key
+(`OPENROUTER_API_KEY` for OpenRouter, `GOOGLE_API_KEY`/`GEMINI_API_KEY` for Gemini). Use shared `LLM_*`
+settings for stack-wide behavior unless a BDD-specific override is needed.
 
 ### Workflow Orchestrator
 
@@ -99,13 +147,25 @@ VITE_ENABLE_MOCKS=false
 
 ## .env Examples
 
-For Docker Compose, create a root `.env` file so the shared Gemini credential is available to both the Invest and BDD agents:
+For Docker Compose, create a root `.env` file so the shared provider selection
+and credential are available to both the Invest and BDD agents.
+
+Gemini example:
 
 ```env
+LLM_PROVIDER=gemini
 GOOGLE_API_KEY=your-gemini-api-key
 ```
 
-The Compose configuration fails fast if `GOOGLE_API_KEY` is missing because both Gemini-backed agents require it in the default LLM mode.
+OpenRouter example:
+
+```env
+LLM_PROVIDER=openrouter
+OPENROUTER_API_KEY=your-openrouter-api-key
+```
+
+Each agent validates the credential required by the selected provider at startup
+or first LLM use.
 
 Suggested per-service local file layout when running services independently:
 
@@ -284,8 +344,9 @@ Recommended hostnames within Docker Compose:
 ## Secrets and Credentials
 
 - Never commit real API keys, tokens, or provider credentials to `docker-compose.yml`.
-- Use `GOOGLE_API_KEY` as the shared Gemini credential for the default Invest and BDD agents.
-- Use `QA_LLM_API_KEY` only when the BDD Agent needs a provider key different from the shared Gemini credential.
+- Use `LLM_PROVIDER=gemini` with `GOOGLE_API_KEY` for the default Invest and BDD agents.
+- Use `LLM_PROVIDER=openrouter` with `OPENROUTER_API_KEY` to route both LLM-backed agents through OpenRouter.
+- Use `INVEST_LLM_API_KEY` or `QA_LLM_API_KEY` only when an agent needs a provider key different from the shared stack credential.
 - `GEMINI_API_KEY` is supported as a legacy Gemini alias.
 - Prefer loading secrets from `.env` files that are gitignored, CI/CD secret stores, or runtime secret managers.
 - Rotate any credential immediately if it was exposed in source control history.
