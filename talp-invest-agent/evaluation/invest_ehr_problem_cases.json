@@ -1,0 +1,212 @@
+[
+  {
+    "id": "I-01",
+    "group": "Independent",
+    "expected_failed_criterion": "independent",
+    "known_problem": "Depende explicitamente de outra user story.",
+    "story": "Como enfermeiro, quero registrar os sinais vitais do paciente no prontuario eletronico depois que a user story de cadastro de atendimento for concluida, para acompanhar a evolucao clinica."
+  },
+  {
+    "id": "I-02",
+    "group": "Independent",
+    "expected_failed_criterion": "independent",
+    "known_problem": "Depende de uma etapa anterior do fluxo.",
+    "story": "Como medico plantonista, quero visualizar a lista de medicamentos atuais somente apos a etapa de reconciliacao medicamentosa ser finalizada, para decidir a conduta com base nos dados conferidos."
+  },
+  {
+    "id": "I-03",
+    "group": "Independent",
+    "expected_failed_criterion": "independent",
+    "known_problem": "Depende de decisao pendente de comite.",
+    "story": "Como coordenador assistencial, quero liberar o resumo de alta conforme a decisao pendente do comite de prontuario, para padronizar a comunicacao com o paciente."
+  },
+  {
+    "id": "I-04",
+    "group": "Independent",
+    "expected_failed_criterion": "independent",
+    "known_problem": "Depende de documento externo.",
+    "story": "Como recepcionista, quero anexar documentos digitalizados seguindo o documento externo PAD-42, para manter o prontuario eletronico completo."
+  },
+  {
+    "id": "I-05",
+    "group": "Independent",
+    "expected_failed_criterion": "independent",
+    "known_problem": "Depende de ticket/epico externo.",
+    "story": "Como analista de faturamento, quero consultar dados do atendimento conforme o ticket JIRA-EHR-918 e o epico de autorizacao, para validar a cobranca hospitalar."
+  },
+  {
+    "id": "N-01",
+    "group": "Negotiable",
+    "expected_failed_criterion": "negotiable",
+    "known_problem": "Congela implementacao em API REST especifica.",
+    "story": "Como medico, quero que o prontuario exponha obrigatoriamente uma API REST POST /v1/evolucoes para registrar a evolucao clinica, para documentar o atendimento."
+  },
+  {
+    "id": "N-02",
+    "group": "Negotiable",
+    "expected_failed_criterion": "negotiable",
+    "known_problem": "Congela tecnologia de mensageria.",
+    "story": "Como enfermeiro, quero que a atualizacao de sinais vitais seja publicada obrigatoriamente em um topico Kafka chamado ehr.vitals, para que a equipe veja dados recentes."
+  },
+  {
+    "id": "N-03",
+    "group": "Negotiable",
+    "expected_failed_criterion": "negotiable",
+    "known_problem": "Congela modelagem de banco.",
+    "story": "Como auditor clinico, quero que os registros de alergia sejam gravados exatamente na tabela SQL TB_ALERGIA com chave composta, para consultar historico do paciente."
+  },
+  {
+    "id": "N-04",
+    "group": "Negotiable",
+    "expected_failed_criterion": "negotiable",
+    "known_problem": "Congela uso de cache especifico.",
+    "story": "Como farmaceutico, quero que a lista de prescricoes seja carregada exclusivamente do Redis com TTL de 300 segundos, para revisar medicamentos ativos."
+  },
+  {
+    "id": "N-05",
+    "group": "Negotiable",
+    "expected_failed_criterion": "negotiable",
+    "known_problem": "Congela tecnologia e formato de integracao.",
+    "story": "Como tecnico de laboratorio, quero receber resultados no prontuario por um endpoint SOAP fixo com XML assinado, para conferir exames liberados."
+  },
+  {
+    "id": "V-01",
+    "group": "Valuable",
+    "expected_failed_criterion": "valuable",
+    "known_problem": "Nao explicita valor, beneficio, objetivo ou beneficiario alem da acao.",
+    "story": "Como medico, quero abrir a aba de evolucao clinica."
+  },
+  {
+    "id": "V-02",
+    "group": "Valuable",
+    "expected_failed_criterion": "valuable",
+    "known_problem": "Descreve atividade operacional sem beneficio.",
+    "story": "Como recepcionista, quero clicar no botao imprimir etiqueta do paciente."
+  },
+  {
+    "id": "V-03",
+    "group": "Valuable",
+    "expected_failed_criterion": "valuable",
+    "known_problem": "Solicita campo na tela sem objetivo ou resultado esperado.",
+    "story": "Como enfermeiro, quero um campo para escrever observacoes no prontuario."
+  },
+  {
+    "id": "V-04",
+    "group": "Valuable",
+    "expected_failed_criterion": "valuable",
+    "known_problem": "Foca em item visual sem valor de negocio ou clinico.",
+    "story": "Como usuario do sistema, quero ver um icone azul ao lado do nome do paciente."
+  },
+  {
+    "id": "V-05",
+    "group": "Valuable",
+    "expected_failed_criterion": "valuable",
+    "known_problem": "Expressa preferencia de tela sem beneficio.",
+    "story": "Como medico residente, quero que a tela de prescricoes fique em modo compacto."
+  },
+  {
+    "id": "E-01",
+    "group": "Estimable",
+    "expected_failed_criterion": "estimable",
+    "known_problem": "Escopo vago e amplo demais para estimativa inicial.",
+    "story": "Como diretor clinico, quero melhorar todo o prontuario eletronico para aumentar a eficiencia do hospital."
+  },
+  {
+    "id": "E-02",
+    "group": "Estimable",
+    "expected_failed_criterion": "estimable",
+    "known_problem": "Termo impreciso sem delimitar comportamento.",
+    "story": "Como enfermeiro, quero otimizar o processo de triagem no prontuario para reduzir atrasos."
+  },
+  {
+    "id": "E-03",
+    "group": "Estimable",
+    "expected_failed_criterion": "estimable",
+    "known_problem": "Escopo inclui modulo inteiro sem fronteiras claras.",
+    "story": "Como medico, quero gerenciar todo o modulo de prescricoes do prontuario para organizar o tratamento do paciente."
+  },
+  {
+    "id": "E-04",
+    "group": "Estimable",
+    "expected_failed_criterion": "estimable",
+    "known_problem": "Depende de regras ainda indefinidas.",
+    "story": "Como gestor de qualidade, quero validar alertas clinicos com regras que ainda serao definidas pela area medica, para reduzir eventos adversos."
+  },
+  {
+    "id": "E-05",
+    "group": "Estimable",
+    "expected_failed_criterion": "estimable",
+    "known_problem": "Usa requisito generico sem criterios de escopo.",
+    "story": "Como profissional assistencial, quero uma experiencia completa e moderna no prontuario para trabalhar melhor."
+  },
+  {
+    "id": "S-01",
+    "group": "Small",
+    "expected_failed_criterion": "small",
+    "known_problem": "Combina registro, prescricoes e exames em uma unica story.",
+    "story": "Como medico, quero registrar evolucao clinica, prescrever medicamentos e solicitar exames no prontuario para concluir o atendimento."
+  },
+  {
+    "id": "S-02",
+    "group": "Small",
+    "expected_failed_criterion": "small",
+    "known_problem": "Agrupa triagem, alergias e impressao em uma entrega.",
+    "story": "Como enfermeiro, quero coletar sinais vitais, atualizar alergias e imprimir pulseira do paciente para iniciar a assistencia."
+  },
+  {
+    "id": "S-03",
+    "group": "Small",
+    "expected_failed_criterion": "small",
+    "known_problem": "Inclui multiplos perfis e fluxos em uma story.",
+    "story": "Como equipe assistencial, quero que medicos, enfermeiros e farmaceuticos revisem, aprovem e auditem prescricoes para garantir seguranca."
+  },
+  {
+    "id": "S-04",
+    "group": "Small",
+    "expected_failed_criterion": "small",
+    "known_problem": "Abrange integracao completa com varios sistemas.",
+    "story": "Como administrador hospitalar, quero integrar o prontuario com laboratorio, farmacia, faturamento e regulacao para centralizar dados."
+  },
+  {
+    "id": "S-05",
+    "group": "Small",
+    "expected_failed_criterion": "small",
+    "known_problem": "Reune configuracao, notificacao e painel em uma entrega.",
+    "story": "Como gestor de leitos, quero configurar regras de isolamento, notificar a CCIH e acompanhar um painel de ocupacao para controlar riscos."
+  },
+  {
+    "id": "T-01",
+    "group": "Testable",
+    "expected_failed_criterion": "testable",
+    "known_problem": "Resultado subjetivo sem condicao verificavel.",
+    "story": "Como medico, quero que o prontuario seja intuitivo para usar melhor durante a consulta."
+  },
+  {
+    "id": "T-02",
+    "group": "Testable",
+    "expected_failed_criterion": "testable",
+    "known_problem": "Usa qualidade subjetiva sem metrica ou comportamento observavel.",
+    "story": "Como enfermeiro, quero uma tela agradavel de triagem para atender pacientes com mais conforto."
+  },
+  {
+    "id": "T-03",
+    "group": "Testable",
+    "expected_failed_criterion": "testable",
+    "known_problem": "Promessa vaga de desempenho sem criterio mensuravel.",
+    "story": "Como recepcionista, quero que a busca de pacientes seja muito rapida para agilizar o atendimento."
+  },
+  {
+    "id": "T-04",
+    "group": "Testable",
+    "expected_failed_criterion": "testable",
+    "known_problem": "Estado desejado abstrato sem verificacao.",
+    "story": "Como gestor clinico, quero que os dados do prontuario estejam sempre confiaveis para tomar melhores decisoes."
+  },
+  {
+    "id": "T-05",
+    "group": "Testable",
+    "expected_failed_criterion": "testable",
+    "known_problem": "Objetivo de satisfacao sem comportamento ou criterio de aceite.",
+    "story": "Como paciente, quero acompanhar meu atendimento de forma tranquila para ficar satisfeito com o hospital."
+  }
+]
