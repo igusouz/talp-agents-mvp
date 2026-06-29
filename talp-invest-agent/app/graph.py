@@ -99,8 +99,22 @@ def build_agent(
         analyzer = HeuristicInvestAnalyzer()
         report_generator = HeuristicReportGenerator()
     elif backend == "llm":
-        analyzer = GeminiInvestAnalyzer(settings.llm_model, temperature=0.0)
-        report_generator = GeminiReportGenerator(settings.llm_model, temperature=0.0)
+        analyzer = GeminiInvestAnalyzer(
+            settings.llm_model,
+            temperature=0.0,
+            max_tokens=settings.llm_max_tokens,
+            request_timeout=settings.llm_timeout_seconds,
+            retries=settings.llm_retries,
+            thinking_budget=settings.llm_thinking_budget,
+        )
+        report_generator = GeminiReportGenerator(
+            settings.llm_model,
+            temperature=0.0,
+            max_tokens=settings.llm_max_tokens,
+            request_timeout=settings.llm_timeout_seconds,
+            retries=settings.llm_retries,
+            thinking_budget=settings.llm_thinking_budget,
+        )
     else:
         raise ValueError("backend must be 'llm' or 'heuristic'")
     return InvestAgent(settings, analyzer, report_generator)

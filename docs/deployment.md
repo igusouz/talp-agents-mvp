@@ -21,10 +21,15 @@ GOOGLE_API_KEY=your-gemini-api-key
 # GEMINI_API_KEY=your-gemini-api-key
 TALP_AUDIT_LOG_DIR=logs/audit
 TALP_LLM_MODEL=gemini-2.5-flash
+TALP_LLM_MAX_TOKENS=1024
+TALP_LLM_TIMEOUT_SECONDS=45
+TALP_LLM_RETRIES=1
+TALP_LLM_THINKING_BUDGET=0
 TALP_BACKEND=llm
 ```
 
 `GOOGLE_API_KEY` is required when `TALP_BACKEND=llm`. `GEMINI_API_KEY` remains supported as a legacy alias for the Invest Agent.
+The `TALP_LLM_*` execution limits keep structured Gemini responses short and reduce automatic retry traffic when using free-tier quotas.
 
 ### Compliance Agent
 

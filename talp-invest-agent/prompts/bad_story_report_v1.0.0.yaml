@@ -10,6 +10,10 @@ template: |
   - Produce problems only for criteria with status "fail".
   - Use only the user story text and the supplied INVEST analysis.
   - Evidence must be a literal substring copied from the user story.
+  - For each problem, evidence must contain at most 2 literal substrings.
+  - Each evidence item must be at most 120 characters.
+  - Each problem and explanation must be one sentence with at most 160 characters.
+  - Do not repeat phrases inside a problem or explanation.
   - Do not recommend improvements.
   - Do not propose a revised user story.
   - Do not add criteria outside INVEST.

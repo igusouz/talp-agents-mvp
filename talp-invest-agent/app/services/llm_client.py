@@ -47,7 +47,15 @@ def _gemini_api_key() -> str:
     return api_key
 
 
-def _build_gemini_chat_model(model_name: str, temperature: float):
+def _build_gemini_chat_model(
+    model_name: str,
+    temperature: float,
+    *,
+    max_tokens: int | None = None,
+    request_timeout: float | None = None,
+    retries: int | None = None,
+    thinking_budget: int | None = None,
+):
     try:
         from langchain_google_genai import ChatGoogleGenerativeAI
     except ImportError as exc:
@@ -59,14 +67,38 @@ def _build_gemini_chat_model(model_name: str, temperature: float):
         "model": model_name,
         "temperature": temperature,
     }
+    if max_tokens is not None:
+        kwargs["max_tokens"] = max_tokens
+    if request_timeout is not None:
+        kwargs["request_timeout"] = request_timeout
+    if retries is not None:
+        kwargs["retries"] = retries
+    if thinking_budget is not None:
+        kwargs["thinking_budget"] = thinking_budget
     kwargs["google_api_key"] = _gemini_api_key()
     return ChatGoogleGenerativeAI(**kwargs)
 
 
 class GeminiInvestAnalyzer:
-    def __init__(self, model_name: str, temperature: float = 0.0) -> None:
+    def __init__(
+        self,
+        model_name: str,
+        temperature: float = 0.0,
+        *,
+        max_tokens: int | None = None,
+        request_timeout: float | None = None,
+        retries: int | None = None,
+        thinking_budget: int | None = None,
+    ) -> None:
         self.model_name = model_name
-        self._llm = _build_gemini_chat_model(model_name, temperature)
+        self._llm = _build_gemini_chat_model(
+            model_name,
+            temperature,
+            max_tokens=max_tokens,
+            request_timeout=request_timeout,
+            retries=retries,
+            thinking_budget=thinking_budget,
+        )
 
     def analyze(self, user_story_text: str, prompt: PromptTemplate) -> InvestAnalysis:
         structured = self._llm.with_structured_output(InvestAnalysis)
@@ -74,9 +106,25 @@ class GeminiInvestAnalyzer:
 
 
 class GeminiReportGenerator:
-    def __init__(self, model_name: str, temperature: float = 0.0) -> None:
+    def __init__(
+        self,
+        model_name: str,
+        temperature: float = 0.0,
+        *,
+        max_tokens: int | None = None,
+        request_timeout: float | None = None,
+        retries: int | None = None,
+        thinking_budget: int | None = None,
+    ) -> None:
         self.model_name = model_name
-        self._llm = _build_gemini_chat_model(model_name, temperature)
+        self._llm = _build_gemini_chat_model(
+            model_name,
+            temperature,
+            max_tokens=max_tokens,
+            request_timeout=request_timeout,
+            retries=retries,
+            thinking_budget=thinking_budget,
+        )
 
     def generate(
         self,

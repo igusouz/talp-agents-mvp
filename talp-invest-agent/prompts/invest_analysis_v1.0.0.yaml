@@ -16,6 +16,12 @@ template: |
   - Be conservative.
   - If textual evidence is missing or ambiguous, mark the criterion as "fail".
   - Evidence must be a literal substring copied from the user story.
+  - Return all six criteria exactly once: independent, negotiable, valuable, estimable, small, testable.
+  - For each criterion, evidence must contain at most 2 literal substrings.
+  - Each evidence item must be at most 120 characters.
+  - Each reason must be one sentence with at most 160 characters.
+  - Do not repeat phrases inside a reason.
+  - Prefer concise evidence over long excerpts.
   - Do not recommend improvements.
   - Do not rewrite the user story.
   - Return only structured data matching the requested schema.
@@ -27,6 +33,11 @@ template: |
   - estimable: passes only if the scope is clear enough for an initial estimate.
   - small: passes only if the text suggests one small unit of delivery and not multiple broad goals.
   - testable: passes only if there is observable behavior, result, or verifiable condition.
+
+  Output discipline:
+  - No markdown.
+  - No prose outside the structured output.
+  - No duplicated sentences.
 
   User story:
   {user_story_text}

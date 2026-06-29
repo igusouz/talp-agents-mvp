@@ -58,6 +58,10 @@ services:
       # Set to "heuristic" to run without any LLM (safe default for bring-up).
       TALP_BACKEND: llm
       TALP_LLM_MODEL: gemini-2.5-flash
+      TALP_LLM_MAX_TOKENS: "1024"
+      TALP_LLM_TIMEOUT_SECONDS: "45"
+      TALP_LLM_RETRIES: "1"
+      TALP_LLM_THINKING_BUDGET: "0"
       TALP_AUDIT_LOG_DIR: /app/logs/audit
       # Required when TALP_BACKEND=llm. Set in your shell or a .env file at repo root.
       GOOGLE_API_KEY: ${GOOGLE_API_KEY:?GOOGLE_API_KEY is required for Gemini agents}
